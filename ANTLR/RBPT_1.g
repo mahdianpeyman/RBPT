@@ -51,7 +51,7 @@ acts : ACT act+ ;/*** action can have no parameter, There is no need to name the
 
 act : ID ( COMMA ID)* (COLON touple)? SEMIC;
 
-locs : LOC ID (COMMA ID)* SEMIC;
+locs : LOC ID (COMMA ID)* SEMIC; 
 
 procs : PROC proc+ ;/*s*/
 
