@@ -1,14 +1,29 @@
 grammar RBPT_1;
 
+options {
+   language=Java;
+}
+
+@header {
+}
+
+@lexer::header {
+}
+
+@members {
+
+}
+
 //Rules : 
 
-program : (sorts|funcs|maps|vars|eqns)* (act|msg)? locs proc? init;
+ program : (sorts|funcs|maps|vars|eqns)* (act|msg)? locs proc? init;
 
 sorts : SORT ID ( COMMA ID) * SEMIC;
 
 funcs : CONS function+ ; /* I added a reserved word for giving constructors */ /*s*/
 
-function : ID ( COMMA ID ) * COLON Type SEMIC /*s*/;
+
+function : ID ( COMMA ID ) * COLON type SEMIC /*s*/;
 
 maps : MAP map+ ; /*s*/
 
@@ -24,7 +39,7 @@ var : ID (COMMA ID) * COLON (ID|LOCSORT) SEMIC ; /*swhy Loc for the actual type?
 
 eqns : EQN equation+ ;
 
-equation : simpleExpression EQN simpleExpression SEMIC ;
+equation : simpleExpression EQLS simpleExpression SEMIC ;
 
 simpleExpression : ID | ID LPAREN simpleExpression (COMMA simpleExpression) * RPAREN ;
 
@@ -40,9 +55,9 @@ locs : LOC ID (COMMA ID)* SEMIC;
 
 procs : PROC proc+ ;/*s*/
 
-proc : processDecl EQN processTerm; /*** proc section contains a list of process declaration ***/
+proc : processDecl EQLS processTerm; /*** proc section contains a list of process declaration ***/
 
-processDecl : ID (LPAREN ID COLON (ID|LOCSORT) (, ID ':' (ID|LOCSORT))* RPAREN )?; /*** a process name can have no parameter ***/
+processDecl : ID (LPAREN ID COLON (ID|LOCSORT) ( COMMA ID ':' (ID|LOCSORT))* RPAREN )?; /*** a process name can have no parameter ***/
 
 processTerm : DELTA |
             processTerm PLUS processTerm | /* + is left associative*/
@@ -61,17 +76,20 @@ networkTerm : deploy |
     a.p > cond > sum > +
 */
 
-cond : simpleExpression ;  /*** I made it more efficient  ***/
+cond : simpleExpression ;  /* I made it more efficient  ***/
 
-sum : SUM ID COLON (ID|LOCSORT) '.' ProcessTerm ;/*** first ID is a var name and second ID is its sort ***/
+sum : SUM ID COLON (ID|LOCSORT) '.' processTerm ;/* first ID is a var name and second ID is its sort ***/
 
-instance : ID (LPAREN simpleExpression (, simpleExpression)* RPAREN)?; /*** a process/action/msg instantiation can have zero/more than one parameter ***/
+instance : ID (LPAREN simpleExpression (COMMA simpleExpression)* RPAREN)?; /* a process/action/msg instantiation can have zero/more than one parameter ***/
 
-pName : instance ; /*** in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
+pName : instance ; /* in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
 
-action : instance ; /*** in semantics, action instantiation should be checked ***/
-        | SND LPAREN instance RPAREN | RCV LPAREN instance RPAREN ;/*** in semantics, msg instantiation should be checked ***/
-                                                            /*** rcv action should be in context of sum operator, it can be checked either in semantics or forced by grammar*/
+action : instance | 
+         SND LPAREN instance RPAREN |
+         RCV LPAREN instance RPAREN ;
+         /* in semantics, action instantiation should be checked ***/
+         /* in semantics, msg instantiation should be checked ***/
+         /* rcv action should be in context of sum operator, it can be checked either in semantics or forced by grammar*/
 
 deploy : DEPLOY LPAREN ID COMMA processTerm  RPAREN;
 
@@ -79,11 +97,12 @@ hide : HIDE LPAREN ID COMMA networkTerm RPAREN; /* ID is of 'Loc' type, it shoul
 
 encap : ENCPA LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
 
-abstract -> 'abs' '(' ID',' networkTerm ')'; /* ID is a message constructor, it should be checked in semantics */
+abstract : ABS LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
 
-init -> 'init' networkTerm ';'; /*** I added the reserved word and the ending ; ***/
+init : INIT networkTerm SEMIC; /*** I added the reserved word and the ending ; ***/
 
 // checked !!!
+
 
 
 
@@ -104,9 +123,6 @@ DOT   : '.';
 PARAL : '||';
 ORELSE  : '<>';//OrElse?
 EQLS  : '=';
-
-
-
 
 //reserved_words
 
@@ -129,6 +145,8 @@ LOCSORT   : 'Loc';
 LOC   : 'loc' ;
 MSG   : 'msg';
 DEPLOY    : 'deploy';
+ABS   : 'abs';
+INIT    : 'init';
 
 //ID
 

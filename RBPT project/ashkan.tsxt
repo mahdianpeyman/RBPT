@@ -1,0 +1,85 @@
+sorts : SORT ID ( COMMA ID) * SEMIC ;
+
+funcs : function + SEMIC ;
+
+function : ID COLON type ;
+
+type :  ID |
+    tuple? COLON tuple ;
+
+tuple : ID ( SHARP ID ) * ;
+     /* inja ebham hast chon age tuple ye ID khaali baashe, ba ID ke alternative Type hast ghati mishe */
+
+maps : map + SEMIC ;
+
+map : ID ( COMMA ID ) * COLON type ;
+
+vars : VAR ID (COMMA ID) * SEMIC ;
+
+eqns : EQN equation + ;
+
+//equation : simpleExpression = simpleExpression SEMIC ;
+equation : simpleExpression EQLS simpleExpression SEMIC ;
+
+simpleExpression : ID | ID LPAREN simpleExpression (COMMA simpleExpression) * RPAREN ;
+
+msg : MSG (ID COLON sig)(COMMA ID COLON sig)* SEMIC ;
+
+sig : LPAREN ID ( SHARP ID ) * RPAREN ;
+
+act : ACT (ID COLON sig) (COMMA ID COLON sig)* SEMIC ;
+
+proc : PROC processTerm ;
+
+processTerm : DELTA | 
+  processTerm PLUS processTerm |
+  processTerm PARAL processTerm |
+  sum |
+  action DOT processTerm |
+  cond GIVES processTerm ORELSE processTerm |
+  pName |
+  deploy |
+  hide |
+  encap ;
+
+      /* maslaeye olaviate amal gar ha ro bayad dorost konim inja be in soorat ke : 
+  a.p   >   sum   >   ||  >   + 
+*/ 
+
+cond : dataTerm ;
+
+dataTerm : simpleExpression ;
+
+sum : SUM COLON ID DOT processTerm ; // oh, god! why?
+
+pName : ID | ID LPAREN simpleExpression RPAREN ;
+
+/* in jahaei ke ... ro daghigh motmaen nistam khanoom doctor chi madde nazareshoone vali ba farze inke ina khalian felan mibarim jelo karo */ 
+
+action : ID | ID LPAREN /*...*/ RPAREN |
+    SND LPAREN ID RPAREN | SND LPAREN ID LPAREN /*...*/ RPAREN RPAREN |
+    RCV LPAREN ID RPAREN | RCV LPAREN ID LPAREN /*...*/ RPAREN RPAREN ;
+
+
+//deploy : DEP LPAREN PT COMMA loc RPAREN ;
+deploy : DEP LPAREN processTerm COMMA loc RPAREN ;
+
+loc : ID; //ridims
+
+hide : HIDE LPAREN /*...*/ COMMA processTerm RPAREN ;
+
+encap : ENCAP LPAREN /*...*/ COMMA processTerm RPAREN ;
+
+init : processTerm ;
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+Program -> (Sorts|Funcs|Maps|Vars|Eqns)*|(Act|Msg)?|Proc|Init
+
+Sorts -> 'sort' ID ( ',' ID) * ';'
+
+Funcs -> 'func' Function + ';'
+
+Function -> ID ':' Type
+
+Type ->     ID |
+        Touple? '->' Touple
+
+Touple -> ID ( '#' ID ) *      /* inja ebham hast chon age Touple ye ID khaali baashe, ba ID ke alternative Type hast ghati mishe */d
+
+Maps -> Map + ';'
+
+Map -> ID ( ',' ID ) * ':' Type
+
+Vars -> 'var' ID (',' ID) * ';'
+
+Eqns -> 'eqn' Equation +
+
+Equation -> SimpleExpression = SimpleExpression ';'
+
+SimpleExpression -> ID | ID '(' SimpleExpression (',' SimpleExpression) * ')'
+
+Msgs -> 'msg' (ID ':' Sig)(',' ID ':' Sig)* ';'
+
+Sig -> '(' ID ( '#' ID ) * ')'
+
+Acts -> 'act' (ID ':' Sig) (',' ID ':' Sig)* ';'
+
+Procs -> 'proc' processTerm
+
+ProcessTerm -> 'delta' |
+            ProcessTerm '+' ProcessTerm |
+            ProcessTerm '||' ProcessTerm |
+            Sum |
+            Action '.' ProcessTerm |
+            Cond '->' ProcessTerm '<>' ProcessTerm |
+            PName |
+            Deploy |
+            Hide |
+            Encap
+
+/* maslaeye olaviate amal gar ha ro bayad dorost konim inja be in soorat ke :
+    a.p     >   sum     >   ||  >   +
+*/
+
+Cond -> DataTerm
+
+DataTerm -> SimpleExpression
+
+Sum -> 'sum' ':' ID '.' ProcessTerm
+
+PName -> ID | ID '(' SimpleExpression ')'
+
+/* in jahaei ke ... ro daghigh motmaen nistam khanoom doctor chi madde nazareshoone vali ba farze inke ina khalian felan mibarim jelo karo */
+
+Action -> ID | ID '(' ... ')' |
+        'snd' '(' ID ')' | 'snd' '(' ID '(' ... ')' ')' |
+        'rcv' '(' ID ')' | 'rcv' '(' ID '(' ... ')' ')'
+
+
+Deploy -> 'dep' '(' PT ',' Loc ')'
+
+Hide -> 'hide' '(' ... ',' ProcessTerm ')'
+
+Encap -> 'encap' '(' ... ',' ProcessTerm ')'
+
+Init -> ProcessTerm

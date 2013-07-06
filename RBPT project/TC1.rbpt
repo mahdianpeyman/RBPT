@@ -1,0 +1,30 @@
+//no act , no msg
+sort
+   Nat, Bool;
+
+cons
+   zero : -> Nat;
+   succ : Nat -> Nat;
+   true, false : -> Bool;
+map
+   add : Nat # Nat -> Nat;
+   not : Bool -> Bool;
+   and : Bool # Bool -> Bool;
+var
+   x : Bool;
+   m,n : Nat;
+
+eqn
+  not(true) = false;
+  not(false) = true;
+  and(true,true) = true;
+  and(x,false) = false;
+  and(false,x)=false;
+  add(zero,m) = m;
+  add(succ(n), m) = succ(add(n,m));
+
+loc l;
+
+init
+   deploy(l,delta) ;
+

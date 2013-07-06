@@ -1,0 +1,24 @@
+//no msg
+sort
+   Bool;
+
+cons
+   true, false : -> Bool;
+map
+   not : Bool -> Bool;
+   and : Bool # Bool -> Bool;
+var
+   x,y;
+
+eqn
+  not(true) = false;
+  not(false) = true;
+
+act
+   a;
+   b: Bool ;
+
+loc l ;
+
+init
+   deploy(l,b(true).delta);
