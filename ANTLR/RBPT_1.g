@@ -28,7 +28,7 @@ type ->  touple? '->' (ID|'Loc') /*** return type should be of a sort ('Loc' is 
 
 .SimpleExpression -> ID | ID '(' SimpleExpression (',' SimpleExpression) * ')'
 
-.Msgs -> 'msg' Msg+ /*** message can have no parameter, There is no need to name the param ***/ /*s no need or should'nt have?*/
+.Msgs -> 'msg' Msg+ /*** message ..can have no parameter, There is no need to name the param ***/ /*s no need or should'nt have?*/
 
 .Msg -> ID (','ID)* (':' Touple)? ';' /*s*/
 
