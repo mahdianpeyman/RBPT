@@ -2,6 +2,8 @@ grammar RBPT_1;
 
 options {
    language=Java;
+   // backtrack = true ;
+   k=20;
 }
 
 @header {
@@ -16,7 +18,7 @@ options {
 
 //Rules : 
 
- program : (sorts|funcs|maps|vars|eqns)* (acts|msgs)? locs procs? init;
+ program : (sorts|funcs|maps|vars|eqns)*  msgs? acts? locs procs? init;
 
 sorts : SORT ID ( COMMA ID) * SEMIC;
 
@@ -69,18 +71,20 @@ processDecl : ID (LPAREN ID COLON (ID|LOCSORT) ( COMMA ID ':' (ID|LOCSORT))* RPA
 processTerm : 
             processTermSingle pTP;
 processTermSingle :
+            sum |
+            
             action DOT processTermSingle |
             cond POINTER processTerm ORELSE processTermSingle |
-            sum |
-            DELTA |
             pName  |
+            DELTA |
             LPAREN processTerm RPAREN ;
+
             
 sum : SUM ID COLON (ID|LOCSORT) '.' processTermSingle ;/* first ID is a var name and second ID is its sort ***/            
 
             
 pTP :
-            PLUS processTermSingle pTP|; 
+            |PLUS processTermSingle pTP; 
             
 /*networkTerm : deploy |
             networkTerm PARAL networkTerm | // || is left associative
@@ -124,9 +128,10 @@ instance : ID (LPAREN simpleExpression (COMMA simpleExpression)* RPAREN)?; /* a 
 
 
 
-action : instance | 
-         SND LPAREN instance RPAREN |
-         RCV LPAREN instance RPAREN ;
+action : 
+        instance | 
+        SND LPAREN instance RPAREN |
+        RCV LPAREN instance RPAREN ;
          /* in semantics, action instantiation should be checked ***/
          /* in semantics, msg instantiation should be checked ***/
          /* rcv action should be in context of sum operator, it can be checked either in semantics or forced by grammar*/

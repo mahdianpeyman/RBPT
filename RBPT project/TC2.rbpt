@@ -7,8 +7,6 @@ cons
 map
    not : Bool -> Bool;
    and : Bool # Bool -> Bool;
-var
-   x,y;
 
 eqn
   not(true) = false;

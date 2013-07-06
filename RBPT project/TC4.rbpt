@@ -25,7 +25,7 @@ eqn
 msg
    ack ;
    rep : Loc # Loc ;
-   req : Loc
+   req : Loc;
 
 act
   succ;
@@ -34,7 +34,7 @@ loc l1,l2;
 
 proc
    X(adr:Loc) = snd(req(adr)).X(adr) ;
-   Y(adr:Loc) = sum lx:Loc.rcv(req(lx)).snd(rep(adr,lx)).succ.Y(adr)
+   Y(adr:Loc) = sum lx:Loc.rcv(req(lx)).snd(rep(adr,lx)).succ.Y(adr);
 
 init
    abs(req,encap(rep,(hide(l1,deploy(l1,X(l1)) || deploy(l2,Y(l2))))));
