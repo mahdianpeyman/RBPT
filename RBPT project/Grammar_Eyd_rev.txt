@@ -1,0 +1,72 @@
+Program -> (Sorts|Funcs|Maps|Vars|Eqns)*|(Act|Msg)?|Locs|Proc?|Init /*** we can have no process declaration, I added Locs ***/
+
+Sorts -> 'sort' ID ( ',' ID) * ';'
+
+Funcs -> 'cons' Function + ';' /*** I added a reserved word for giving constructors ***/
+
+Function -> ID ':' Type
+
+Type ->    Touple? '->' (ID|'Loc') /*** return type should be of a sort ('Loc' is a predefined sort), it should be checked in semantics ***/
+
+Touple -> (ID|'Loc') ( '#' (ID|'Loc' ) *      /*** I removed ID in definition of Type***/
+
+Maps -> Map + ';'
+
+Map -> 'map' ID ( ',' ID ) * ':' Type /*** I added a reserved word for giving functions over ADTs ***/
+
+Vars -> 'var' ID (',' ID) * ':' (ID|'Loc') ';' /*** vars should have a sort ***/
+
+Eqns -> 'eqn' Equation +
+
+Equation -> SimpleExpression = SimpleExpression ';'
+
+SimpleExpression -> ID | ID '(' SimpleExpression (',' SimpleExpression) * ')'
+
+Msgs -> 'msg' ID (','ID)* (':' Touple)? ';' /*** message can have no parameter, There is no need to name the param ***/
+
+Acts -> 'act' ID (','ID)* (':' Touple)? ';' /*** action can have no parameter, There is no need to name the param ***/
+
+Locs -> 'loc' ID (','ID)* ';'
+
+Procs -> 'proc' processDecl '=' processTerm /*** proc section contains a list of process declaration ***/
+
+processDecl -> ID ('(' ID ':' (ID|'Loc') (, ID ':' (ID|'Loc'))* ')' )? /*** a process name can have no parameter ***/
+
+ProcessTerm -> 'delta' |
+            ProcessTerm '+' ProcessTerm | /* + is left associative*/
+            Sum |
+            Action '.' ProcessTerm |
+            Cond '->' ProcessTerm '<>' ProcessTerm |
+            PName
+
+NetworkTerm -> Deploy |
+            NetworkTerm '||' NetworkTerm | /* || is left associative*/
+            Hide |
+            Encap |
+            Abstract
+
+/* Operator priorities:
+    a.p > cond > sum > +
+*/
+
+Cond ->  SimpleExpression  /*** I made it more efficient  ***/
+
+Sum -> 'sum' ID ':' (ID|'Loc') '.' ProcessTerm /*** first ID is a var name and second ID is its sort ***/
+
+Instance - > ID ('(' SimpleExpression (, SimpleExpression)* ')')? /*** a process/action/msg instantiation can have zero/more than one parameter ***/
+
+PName -> Instance /*** in semantics, process instantiation should be checked ***/
+
+Action -> Instance /*** in semantics, action instantiation should be checked ***/
+        | 'snd' '(' Instance ')' | 'rcv' '(' Instance ')' /*** in semantics, msg instantiation should be checked ***/
+                                                            /*** rcv action should be in context of sum operator, it can be checked either in semantics or forced by grammar*/
+
+Deploy -> 'deploy' '(' ID ', 'ProcessTerm  ')'
+
+Hide -> 'hide' '(' ID ',' NetworkTerm ')' /* ID is of 'Loc' type, it should be checked in semantics */
+
+Encap -> 'encap' '(' ID ',' NetworkTerm ')' /* ID is a message constructor, it should be checked in semantics */
+
+Abstract -> 'abs' '(' ID',' NetworkTerm ')' /* ID is a message constructor, it should be checked in semantics */
+
+Init -> 'init' NetworkTerm ';' /*** I added the reserved word and the ending ; ***/
