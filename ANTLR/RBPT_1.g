@@ -42,17 +42,17 @@ procs : PROC proc+ ;/*s*/
 
 proc : processDecl EQN processTerm; /*** proc section contains a list of process declaration ***/
 
-processDecl : ID (LPAREN ID COLON (ID|LOCSORT) (, ID ':' (ID|'Loc'))* ')' )?; /*** a process name can have no parameter ***/
+processDecl : ID (LPAREN ID COLON (ID|LOCSORT) (, ID ':' (ID|LOCSORT))* RPAREN )?; /*** a process name can have no parameter ***/
 
-processTerm : 'delta' |
-            processTerm '+' processTerm | /* + is left associative*/
+processTerm : DELTA |
+            processTerm PLUS processTerm | /* + is left associative*/
             sum |
-            action '.' processTerm |
-            cond '->' processTerm '<>' processTerm |
+            action DOT processTerm |
+            cond POINTER processTerm ORESLE processTerm |
             pName ;
 
 networkTerm : deploy |
-            networkTerm '||' networkTerm | /* || is left associative*/
+            networkTerm PARAL networkTerm | /* || is left associative*/
             hide |
             encap |
             abstract ;
@@ -63,21 +63,21 @@ networkTerm : deploy |
 
 cond : simpleExpression ;  /*** I made it more efficient  ***/
 
-sum : 'sum' ID ':' (ID|'Loc') '.' ProcessTerm ;/*** first ID is a var name and second ID is its sort ***/
+sum : SUM ID COLON (ID|LOCSORT) '.' ProcessTerm ;/*** first ID is a var name and second ID is its sort ***/
 
-instance : ID ('(' simpleExpression (, simpleExpression)* ')')?; /*** a process/action/msg instantiation can have zero/more than one parameter ***/
+instance : ID (LPAREN simpleExpression (, simpleExpression)* RPAREN)?; /*** a process/action/msg instantiation can have zero/more than one parameter ***/
 
 pName : instance ; /*** in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
 
 action : instance ; /*** in semantics, action instantiation should be checked ***/
-        | 'snd' '(' instance ')' | 'rcv' '(' instance ')' ;/*** in semantics, msg instantiation should be checked ***/
+        | SND LPAREN instance RPAREN | RCV LPAREN instance RPAREN ;/*** in semantics, msg instantiation should be checked ***/
                                                             /*** rcv action should be in context of sum operator, it can be checked either in semantics or forced by grammar*/
 
-deploy : 'deploy' '(' ID ', 'processTerm  ')';
+deploy : DEPLOY LPAREN ID COMMA processTerm  RPAREN;
 
-hide : 'hide' '(' ID ',' networkTerm ')'; /* ID is of 'Loc' type, it should be checked in semantics */
+hide : HIDE LPAREN ID COMMA networkTerm RPAREN; /* ID is of 'Loc' type, it should be checked in semantics */
 
-encap -> 'encap' '(' ID ',' networkTerm ')'; /* ID is a message constructor, it should be checked in semantics */
+encap : ENCPA LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
 
 abstract -> 'abs' '(' ID',' networkTerm ')'; /* ID is a message constructor, it should be checked in semantics */
 
@@ -128,6 +128,7 @@ RCV   : 'rcv';
 LOCSORT   : 'Loc';
 LOC   : 'loc' ;
 MSG   : 'msg';
+DEPLOY    : 'deploy';
 
 //ID
 
