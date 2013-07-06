@@ -16,7 +16,7 @@ options {
 
 //Rules : 
 
- program : (sorts|funcs|maps|vars|eqns)* (act|msg)? locs proc? init;
+ program : (sorts|funcs|maps|vars|eqns)* (acts|msgs)? locs procs? init;
 
 sorts : SORT ID ( COMMA ID) * SEMIC;
 
@@ -45,7 +45,7 @@ simpleExpression : ID | ID LPAREN simpleExpression (COMMA simpleExpression) * RP
 
 msgs : MSG msg+ ; /*** message can have no parameter, There is no need to name the param ***/ /*s no need or should'nt have?*/
 
-msg : ID (COMMA ID)* (COLON Touple)? SEMIC ; /*s*/
+msg : ID (COMMA ID)* (COLON touple)? SEMIC ; /*s*/
 
 acts : ACT act+ ;/*** action can have no parameter, There is no need to name the param ***/
 
@@ -55,43 +55,53 @@ locs : LOC ID (COMMA ID)* SEMIC;
 
 procs : PROC proc+ ;/*s*/
 
-proc : processDecl EQLS processTerm; /*** proc section contains a list of process declaration ***/
+proc : processDecl EQLS processTerm SEMIC; /*** proc section contains a list of process declaration ***/
 
 processDecl : ID (LPAREN ID COLON (ID|LOCSORT) ( COMMA ID ':' (ID|LOCSORT))* RPAREN )?; /*** a process name can have no parameter ***/
 
-processTerm : DELTA |
-            processTerm PLUS processTerm | /* + is left associative*/
+/*processTerm : DELTA|
+            processTerm PLUS processTerm | // + is left associative
             sum |
             action DOT processTerm |
             cond POINTER processTerm ORESLE processTerm |
             pName ;
+*/
+processTerm : 
+            processTermSingle pTP;
+processTermSingle :
+            action DOT processTermSingle |
+            cond POINTER processTerm ORELSE processTermSingle |
+            sum |
+            DELTA |
+            pName  |
+            LPAREN processTerm RPAREN ;
+            
+sum : SUM ID COLON (ID|LOCSORT) '.' processTermSingle ;/* first ID is a var name and second ID is its sort ***/            
 
-networkTerm : deploy |
-            networkTerm PARAL networkTerm | /* || is left associative*/
+            
+pTP :
+            PLUS processTermSingle pTP|; 
+            
+/*networkTerm : deploy |
+            networkTerm PARAL networkTerm | // || is left associative
             hide |
             encap |
             abstract ;
-
-/* Operator priorities:
-    a.p > cond > sum > +
 */
 
-cond : simpleExpression ;  /* I made it more efficient  ***/
+networkTerm : 
+            networkTermSingle nTP ;
+networkTermSingle :            
+            deploy  |
+            hide |
+            encap |
+            abstract |
+            LPAREN networkTerm RPAREN  ;
 
-sum : SUM ID COLON (ID|LOCSORT) '.' processTerm ;/* first ID is a var name and second ID is its sort ***/
-
-instance : ID (LPAREN simpleExpression (COMMA simpleExpression)* RPAREN)?; /* a process/action/msg instantiation can have zero/more than one parameter ***/
-
-pName : instance ; /* in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
-
-action : instance | 
-         SND LPAREN instance RPAREN |
-         RCV LPAREN instance RPAREN ;
-         /* in semantics, action instantiation should be checked ***/
-         /* in semantics, msg instantiation should be checked ***/
-         /* rcv action should be in context of sum operator, it can be checked either in semantics or forced by grammar*/
-
-deploy : DEPLOY LPAREN ID COMMA processTerm  RPAREN;
+nTP :
+            |PARAL networkTermSingle nTP; 
+            
+deploy : DEPLOY LPAREN ID COMMA processTerm RPAREN;
 
 hide : HIDE LPAREN ID COMMA networkTerm RPAREN; /* ID is of 'Loc' type, it should be checked in semantics */
 
@@ -100,6 +110,27 @@ encap : ENCPA LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor
 abstract : ABS LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
 
 init : INIT networkTerm SEMIC; /*** I added the reserved word and the ending ; ***/
+            
+            
+/* Operator priorities:
+    a.p > cond > sum > +
+*/
+
+cond : simpleExpression ;  /* I made it more efficient  ***/
+
+pName : instance ; /* in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
+
+instance : ID (LPAREN simpleExpression (COMMA simpleExpression)* RPAREN)?; /* a process/action/msg instantiation can have zero/more than one parameter ***/
+
+
+
+action : instance | 
+         SND LPAREN instance RPAREN |
+         RCV LPAREN instance RPAREN ;
+         /* in semantics, action instantiation should be checked ***/
+         /* in semantics, msg instantiation should be checked ***/
+         /* rcv action should be in context of sum operator, it can be checked either in semantics or forced by grammar*/
+
 
 // checked !!!
 
