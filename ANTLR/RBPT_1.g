@@ -1,20 +1,6 @@
 grammar RBPT_1;
 
-options {
-   language=Java;
-   // backtrack = true ;
-   k=20;
-}
 
-@header {
-}
-
-@lexer::header {
-}
-
-@members {
-
-}
 
 //Rules : 
 
@@ -71,8 +57,7 @@ processDecl : ID (LPAREN ID COLON (ID|LOCSORT) ( COMMA ID ':' (ID|LOCSORT))* RPA
 processTerm : 
             processTermSingle pTP;
 processTermSingle :
-            sum |
-            
+            sum | 
             action DOT processTermSingle |
             cond POINTER processTerm ORELSE processTermSingle |
             pName  |
@@ -90,7 +75,7 @@ pTP :
             networkTerm PARAL networkTerm | // || is left associative
             hide |
             encap |
-            abstract ;
+            abs ;
 */
 
 networkTerm : 
@@ -99,7 +84,7 @@ networkTermSingle :
             deploy  |
             hide |
             encap |
-            abstract |
+            abs |
             LPAREN networkTerm RPAREN  ;
 
 nTP :
@@ -109,9 +94,9 @@ deploy : DEPLOY LPAREN ID COMMA processTerm RPAREN;
 
 hide : HIDE LPAREN ID COMMA networkTerm RPAREN; /* ID is of 'Loc' type, it should be checked in semantics */
 
-encap : ENCPA LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
+encap :ENCAP LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
 
-abstract : ABS LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
+abs : ABS LPAREN ID COMMA networkTerm RPAREN; /* ID is a message constructor, it should be checked in semantics */
 
 init : INIT networkTerm SEMIC; /*** I added the reserved word and the ending ; ***/
             
@@ -179,12 +164,13 @@ SND   : 'snd';
 RCV   : 'rcv';
 LOCSORT   : 'Loc';
 LOC   : 'loc' ;
-MSG   : 'msg';
 DEPLOY    : 'deploy';
 ABS   : 'abs';
-INIT    : 'init';
+INIT    : 'init'; 
 
 //ID
 
 ID  : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ; //As in C IDs
+
+//WS  :   (' '|'\t'|'\r'|'\n')+ {skip();} ;
 
