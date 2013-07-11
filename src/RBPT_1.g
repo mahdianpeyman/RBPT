@@ -84,8 +84,8 @@ $value = new Type();
   )
   {
       String ret = $value.setSecond (tempS) ;
-      if ( tempS ) 
-        System.out.println( tempS) ;  
+      if ( ret != null ) 
+        System.out.println( null) ;  
   }
   ;
 
@@ -101,7 +101,7 @@ $value = new Tuple();
   )
   {
       String ret = $value.addSort($tS)  ;
-      if (ret)
+      if ( ret != null )
         System.out.println (ret) ;
       
   }
@@ -113,7 +113,7 @@ $value = new Tuple();
   )
   {
       ret = $value.addSort($tS)  ;
-      if (ret)
+      if ( ret != null)
         System.out.println (ret) ;
       
   }
@@ -139,8 +139,8 @@ var locals[String tS=""]
     | LOCSORT {$tS=$LOCSORT.text;}
   )
   {
-    String ret = Manager.addVariables(tempV,$ts) ;
-    if ( ret ) 
+    String ret = Manager.addVariables(tempV,$tS) ;
+    if ( ret != null ) 
         System.out.println( ret) ; 
   }
   SEMIC
