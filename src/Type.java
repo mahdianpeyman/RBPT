@@ -16,6 +16,15 @@ public class Type {
 	public void setSecond (Sort s) {
 		second = s ;
 	}
+	
+	public String setSecond (String str ) {
+		Sort tempS = SortSingleton.getInstance().getSort (str) ;
+	      if (tempS == null ) 
+	        return ( "not a valid Sort " ) ;
+	      else
+	           setSecond(tempS) ;
+	      return null;
+	}
 	public Type () {
 		first = new Tuple() ;
 		

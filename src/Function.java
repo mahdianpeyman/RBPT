@@ -1,9 +1,21 @@
 
 public class Function {
-	public String name; 
-	public Type type ;
+	private String name; 
+	private Type type ;
 	public Function (String str) {
-		name = str; 
+		setName(str); 
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Type getType() {
+		return type;
+	}
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 }

@@ -29,37 +29,34 @@ sorts
   :
   SORT ID 
          {
-          Sort s = new Sort($ID.text);
-          SortSingleton.getInstance().addSort(s);
-          System.out.println($ID.text);
+         Manager.addSort($ID.text);
          }
   (COMMA ID 
            {
-            s = new Sort($ID.text);
-            SortSingleton.getInstance().addSort(s);
-            System.out.println($ID.text);
+            Manager.addSort($ID.text) ;
            })* SEMIC
   ;
 
 funcs
   :
-  CONS function+
-  ; /* I added a reserved word for giving constructors */ /*s*/
+  CONS function+ {Manager.createDatatypesSortsFucntions();} 
+  ; 
+  
+  /* I added a reserved word for giving constructors */ /*s*/
 
 function
   :
-  
   {
-   Vector<Function> tempF = new Vector<Function>();
+   Vector<String> tempF = new Vector<String>();
   }
   ID 
     {
-     tempF.add(new Function($ID.text));
+     tempF.add($ID.text);
     }
   (COMMA ID 
            {
-            tempF.add(new Function($ID.text));
-           })* COLON type {Manager.addFuntions (tempF,type) ;}SEMIC /*s*/
+            tempF.add($ID.text);
+           })* COLON type {Manager.addFunctions (tempF,$type.value) ;}SEMIC /*s*/
   ;
 
 maps
@@ -69,7 +66,7 @@ maps
 
 map
   :
-  ID COLON type SEMIC
+  ID COLON type {Manager.addMap ($ID,$type.value);}SEMIC
   ; /* I added a reserved word for giving functions over ADTs */ /*s*/
 
 type returns [Type value] locals [String tS=""]
@@ -86,12 +83,9 @@ $value = new Type();
     | LOCSORT {$tS = $ID.text;}
   )
   {
-      Sort tempS = SortSingleton.getInstance().getSort ($tS) ;
-      if (tempS == null ) 
-        System.out.println ( "not a valid Sort " ) ;
-      else
-            $value.setSecond(tempS) ;
-      
+      String ret = $value.setSecond (tempS) ;
+      if ( tempS ) 
+        System.out.println( tempS) ;  
   }
   ;
 
@@ -106,11 +100,9 @@ $value = new Tuple();
     | LOCSORT {$tS = $LOCSORT.text;}
   )
   {
-      Sort tempS = SortSingleton.getInstance().getSort ($tS) ;
-      if (tempS == null ) 
-        System.out.println ( "not a valid Sort " ) ;
-      else
-            $value.addSort(tempS) ;
+      String ret = $value.addSort($tS)  ;
+      if (ret)
+        System.out.println (ret) ;
       
   }
   (
@@ -120,11 +112,10 @@ $value = new Tuple();
     | LOCSORT {$tS = $LOCSORT.text;}
   )
   {
-      tempS = SortSingleton.getInstance().getSort ($tS) ;
-      if (tempS == null ) 
-        System.out.println ( "not a valid Sort " ) ;
-      else
-        $value.addSort(tempS) ;
+      ret = $value.addSort($tS)  ;
+      if (ret)
+        System.out.println (ret) ;
+      
   }
   )*
   ;
@@ -136,13 +127,22 @@ vars
   ;
 
 /*** vars should have a sort ***/ /*s*/
-var
+var locals[String tS=""]
   :
-  ID (COMMA ID)* COLON
+  {
+   Vector<String> tempV = new Vector<String>();
+  }
+  
+  ID {tempV.add($ID.text);}(COMMA ID{tempV.add($ID.text);})* COLON
   (
-    ID
-    | LOCSORT
+    ID {$tS=$ID.text;}
+    | LOCSORT {$tS=$LOCSORT.text;}
   )
+  {
+    String ret = Manager.addVariables(tempV,$ts) ;
+    if ( ret ) 
+        System.out.println( ret) ; 
+  }
   SEMIC
   ; /*swhy Loc for the actual type? */
 
