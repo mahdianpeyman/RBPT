@@ -66,7 +66,7 @@ maps
 
 map
   :
-  ID COLON type {Manager.addMap ($ID,$type.value);}SEMIC
+  ID COLON type {Manager.addMap ($ID.text,$type.value);}SEMIC
   ; /* I added a reserved word for giving functions over ADTs */ /*s*/
 
 type returns [Type value] locals [String tS=""]
@@ -83,9 +83,9 @@ $value = new Type();
     | LOCSORT {$tS = $ID.text;}
   )
   {
-      String ret = $value.setSecond (tempS) ;
+      String ret = $value.setSecond ($tS) ;
       if ( ret != null ) 
-        System.out.println( null) ;  
+        System.out.println( ret ) ;  
   }
   ;
 
