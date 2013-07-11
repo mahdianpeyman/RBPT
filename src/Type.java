@@ -1,6 +1,23 @@
 
 
 public class Type {
-	public Tuple first ;
-	public Sort second ;
+	private Tuple first ;
+	private Sort second ;
+	public Tuple getFirst () {
+		return first ;
+	}
+	public void setFirst (Tuple t) {
+		first = t ;
+	}
+	
+	public Sort getSecond () {
+		return second ;
+	}
+	public void setSecond (Sort s) {
+		second = s ;
+	}
+	public Type () {
+		first = new Tuple() ;
+		
+	}
 }

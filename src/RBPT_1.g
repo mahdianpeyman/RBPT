@@ -59,7 +59,7 @@ function
   (COMMA ID 
            {
             tempF.add(new Function($ID.text));
-           })* COLON type SEMIC /*s*/
+           })* COLON type {Manager.addFuntions (tempF,type) ;}SEMIC /*s*/
   ;
 
 maps
@@ -72,16 +72,27 @@ map
   ID COLON type SEMIC
   ; /* I added a reserved word for giving functions over ADTs */ /*s*/
 
-type returns [Type value]
+type returns [Type value] locals [String tS=""]
 @init {
 $value = new Type();
 }
   :
-  tuple? POINTER
+  (tuple {
+    $value.setFirst($tuple.value) ;
+  })?
+  POINTER
   (
-    ID
-    | LOCSORT
+    ID {$tS = $ID.text;}
+    | LOCSORT {$tS = $ID.text;}
   )
+  {
+      Sort tempS = SortSingleton.getInstance().getSort ($tS) ;
+      if (tempS == null ) 
+        System.out.println ( "not a valid Sort " ) ;
+      else
+            $value.setSecond(tempS) ;
+      
+  }
   ;
 
 /*** return type should be of a sort ('Loc' is a predefined sort), it should be checked in semantics ***/ /*s? does'nt ID match 'Loc' ? */
@@ -96,10 +107,10 @@ $value = new Tuple();
   )
   {
       Sort tempS = SortSingleton.getInstance().getSort ($tS) ;
-      if (tempS == null ) {
+      if (tempS == null ) 
         System.out.println ( "not a valid Sort " ) ;
-        $value.l.add(tempS) ;
-      }
+      else
+            $value.addSort(tempS) ;
       
   }
   (
@@ -110,11 +121,10 @@ $value = new Tuple();
   )
   {
       tempS = SortSingleton.getInstance().getSort ($tS) ;
-      if (tempS == null ) {
+      if (tempS == null ) 
         System.out.println ( "not a valid Sort " ) ;
-        $value.l.add(tempS) ;
-      }
-      
+      else
+        $value.addSort(tempS) ;
   }
   )*
   ;
