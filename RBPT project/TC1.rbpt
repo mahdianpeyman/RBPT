@@ -22,8 +22,6 @@ eqn
   add(zero,m) = m;
   add(succ(n), m) = succ(add(n,m));
 
-afadfa ;
-
 loc l;
 
 init

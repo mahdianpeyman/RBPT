@@ -1,18 +1,19 @@
+
 import java.util.Vector;
 
 
 public class Sort {
 
 	public String name ;
-	public Vector <Function> funcs ; 
-	
-	
+	//public Vector <Function> funcs ; 
+
+
 	Sort ( String str ) {
 		name = str ;
-		funcs = new Vector <Function> () ;
+		//funcs = new Vector <Function> () ;
 	}
 
-	
-	
-	
+
+
+
 }

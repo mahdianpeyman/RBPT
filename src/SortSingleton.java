@@ -1,12 +1,13 @@
+
 import java.util.Vector;
 
 
 public class SortSingleton {
-	
+
 	private static SortSingleton instance = null ;
 	private static Vector <Sort> sorts  ;
 	private SortSingleton() {
-		
+
 	}
 	public static SortSingleton getInstance () {
 		if (instance == null ) {
@@ -27,6 +28,6 @@ public class SortSingleton {
 		}
 		return null ;
 	}
-	
+
 
 }
