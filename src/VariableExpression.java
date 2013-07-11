@@ -11,12 +11,17 @@ public class VariableExpression extends SimpleExpression{
 		this.v = v;
 	}
 	
-	public VariableExpression () {
-		
-	}
-
+	
 	public VariableExpression(Variable v2) {
 		v = v2 ;
+		type = 1 ;
 		// TODO Auto-generated constructor stub
+	}
+	
+	
+	@Override
+	public String toString() {
+		String result = v.getName() ;
+		return result ;
 	}
 }

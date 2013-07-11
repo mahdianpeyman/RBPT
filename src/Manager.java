@@ -1,3 +1,4 @@
+import java.awt.print.Printable;
 import java.util.Vector;
 
 public class Manager {
@@ -27,31 +28,31 @@ public class Manager {
 		Vector<Sort> sorts = SortSingleton.getInstance().getSorts();
 		Vector<Function> funcs = FunctionSingleton.getInstance().getFunctions();
 		for (Sort s : sorts) {
-			System.out.print("datatype " + s.getName());
+			out("datatype " + s.getName());
 			int numF = 0;
 			for (Function f : funcs) {
 				Type t = f.getType();
 				if (t.getSecond().equals(s)) {
 					numF++;
 					if (numF == 1)
-						System.out.print(" = ");
+						out(" = ");
 					else
-						System.out.print(" | ");
-					System.out.print(f.getName());
+						out(" | ");
+					out(f.getName());
 					int numS = 0;
 					for (Sort typesort : t.getFirst().l) {
 						numS++;
 						if (numS == 1)
-							System.out.print(" of ");
+							out(" of ");
 						else
-							System.out.print(" * ");
-						System.out.print(typesort.getName());
+							out(" * ");
+						out(typesort.getName());
 					}
 
 				}
 
 			}
-			System.out.println(";");
+			outln(";");
 		}
 	}
 	
@@ -101,6 +102,53 @@ public class Manager {
 		EquationSingleton.getInstance().addEquation(e) ;	
 	}
 	public static void createMLFuncEQN() {
+		Vector<Map> maps = MapSingleton.getInstance().getMaps() ;
+		for (Map m : maps) {
+			Vector<Equation>eqns = EquationSingleton.getInstance().getRelatedEquation(m) ; 
+			outln () ;
+			outln("# equations of " + m.getName()) ;
+			int numE = 0 ;
+			for (Equation e : eqns ) {
+				numE ++ ;
+				if ( numE == 1 ) 
+					out ("fun ");
+				else
+					out ( " | ");
+				printMLEqn ( e ) ;
+				
+				outln();
+			}
+			outln(" ; ");
+		}
 	}
+
+	private static void printMLEqn(Equation e) {
+		printMLSimpleExpression (e.getLeft()) ;
+		out ( " = ") ;
+		printMLSimpleExpression (e.getRight()) ;
 		
+	}
+
+	private static void printMLSimpleExpression(SimpleExpression se) {
+		out(se.toString());
+		
+	}
+
+	private static void out(String string) {
+		System.out.print(string) ;		
+	}
+	private static void outln(String string) {
+		System.out.println(string) ;		
+	}
+	private static void outln() {
+		System.out.println() ;		
+	}	
+	
+	public static void createVars() {
+		/*Vector<Variable> vars = VariableSingleton.getInstance().getVariables();
+		for (Variable v : vars)
+			outln(" # " + v.getName()+ " ");
+			*/
+	}
+	
 }

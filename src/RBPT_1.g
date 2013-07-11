@@ -121,9 +121,9 @@ $value = new Tuple();
   ;
 
 /*** I removed ID in definition of Type***/
-vars
+vars 
   :
-  VAR var+
+  VAR var+ { Manager.createVars () ;}
   ;
 
 /*** vars should have a sort ***/ /*s*/
@@ -157,9 +157,8 @@ equation locals [SimpleExpression left]
   simpleExpression {$left = $simpleExpression.value;}EQLS simpleExpression {Manager.addEquation($left,$simpleExpression.value);}SEMIC
   ;
 
-simpleExpression returns [SimpleExpression value]
+simpleExpression returns [SimpleExpression value] 
 @init {
-$value = new SimpleExpression() ;
 }
   :
   ID 
@@ -171,8 +170,8 @@ $value = new SimpleExpression() ;
       $value = se ;
     
   }
-  (LPAREN simpleExpression {$value.addExpr($simpleExpression.value);}
-    (COMMA simpleExpression {$value.addExpr($simpleExpression.value);})* 
+  (LPAREN left=simpleExpression {$value.addExpr($left.value);}
+    (COMMA right=simpleExpression {$value.addExpr($right.value);})* 
   RPAREN)?
   ;
 

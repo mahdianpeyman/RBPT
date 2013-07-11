@@ -23,6 +23,15 @@ public class EquationSingleton {
 	public Vector <Equation> getEquations ( ) {
 		return eqns ;
 	}
+	public Vector<Equation> getRelatedEquation(Map m) {
+		Vector<Equation> result = new Vector<Equation> () ;
+		for (Equation e : eqns) {
+			if (e.isRelated(m)) {
+				result . add (e) ;
+			}
+		}
+		return result;
+	}
 
 
 }

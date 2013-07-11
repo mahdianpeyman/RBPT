@@ -1,11 +1,11 @@
 import java.util.Vector;
 
 
-public class SimpleExpression {
+public abstract class SimpleExpression {
 	
 	private String ID ;
-	private Vector <SimpleExpression> exprs ;
-
+	protected Vector <SimpleExpression> exprs ;
+	protected int type ;
 	public SimpleExpression(){
 		setExprs(new Vector <SimpleExpression> ()) ;
 	}
@@ -30,6 +30,20 @@ public class SimpleExpression {
 	}
 	public void addExpr ( SimpleExpression se) {
 		exprs . add (se) ;
+	}
+	public boolean isRelated(Map m) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	
+	@Override
+	public abstract String toString () ;
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 	
