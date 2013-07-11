@@ -148,17 +148,32 @@ var locals[String tS=""]
 
 eqns
   :
-  EQN equation+
+  EQN equation+ {Manager.createMLFuncEQN () ;}
   ;
 
-equation
+equation locals [SimpleExpression left]
+
   :
-  simpleExpression EQLS simpleExpression SEMIC
+  simpleExpression {$left = $simpleExpression.value;}EQLS simpleExpression {Manager.addEquation($left,$simpleExpression.value);}SEMIC
   ;
 
-simpleExpression
+simpleExpression returns [SimpleExpression value]
+@init {
+$value = new SimpleExpression() ;
+}
   :
-  ID (LPAREN simpleExpression (COMMA simpleExpression)* RPAREN)?
+  ID 
+  {
+    SimpleExpression se = Manager.setSimpleExpression($ID.text);
+    if ( se == null ) 
+      System.out.println ( Manager.simpleExpressionError($ID.text) ) ;
+    else
+      $value = se ;
+    
+  }
+  (LPAREN simpleExpression {$value.addExpr($simpleExpression.value);}
+    (COMMA simpleExpression {$value.addExpr($simpleExpression.value);})* 
+  RPAREN)?
   ;
 
 msgs

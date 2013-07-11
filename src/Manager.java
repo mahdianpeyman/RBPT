@@ -73,10 +73,34 @@ public class Manager {
 		return null;
 	}
 
-	private static void addVariable(String vName, Sort vSort) {
+	public static void addVariable(String vName, Sort vSort) {
 		Variable v = new Variable ( vName, vSort );
 		VariableSingleton.getInstance().addVariable(v);
 		
 		
 	}
+	
+	public static SimpleExpression setSimpleExpression (String id ){
+		Variable v = VariableSingleton.getInstance().getVariable(id);
+		Function f = FunctionSingleton.getInstance().getFunction(id);
+		Map m = MapSingleton.getInstance().getMap(id) ;
+		if ( v != null )
+			return new VariableExpression(v);
+		if ( f != null )
+			return new FunctionCallExpression(f);
+		if ( m != null )
+			return new MapCallExpression(m);
+		return null;
+	}
+	public static String simpleExpressionError(String id){
+		return  id +" in simpleExpression is not a variable/function/map ! " ;
+	}
+	
+	public static void addEquation (SimpleExpression left, SimpleExpression right) {
+		Equation e = new Equation(left,right) ;
+		EquationSingleton.getInstance().addEquation(e) ;	
+	}
+	public static void createMLFuncEQN() {
+	}
+		
 }
