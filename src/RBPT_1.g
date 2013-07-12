@@ -23,6 +23,12 @@ program
     | eqns
   )*
   msgs? acts? locs procs? init
+  {Manager.createDatatypesSortsFunctions();}
+  {Manager.createMsgSort_Msg();}
+  {Manager.createLocSortLocs() ;}
+  {Manager.createActionSortAction() ;}
+  {Manager.createVars () ;}
+  {Manager.createMLFuncEQN () ;}
   ;
 
 sorts
@@ -39,7 +45,7 @@ sorts
 
 funcs
   :
-  CONS function+ {Manager.createDatatypesSortsFucntions();} 
+  CONS function+  
   ; 
   
   /* I added a reserved word for giving constructors */ /*s*/
@@ -123,7 +129,7 @@ $value = new Tuple();
 /*** I removed ID in definition of Type***/
 vars 
   :
-  VAR var+ { Manager.createVars () ;}
+  VAR var+ 
   ;
 
 /*** vars should have a sort ***/ /*s*/
@@ -148,7 +154,7 @@ var locals[String tS=""]
 
 eqns
   :
-  EQN equation+ {Manager.createMLFuncEQN () ;}
+  EQN equation+ 
   ;
 
 equation locals [SimpleExpression left]
@@ -177,29 +183,46 @@ simpleExpression returns [SimpleExpression value]
 
 msgs
   :
-  MSG msg+
+  MSG msg+ 
   ;
 
 /*** message can have no parameter, There is no need to name the param ***/ /*s no need or should'nt have?*/
 msg
   :
-  ID (COMMA ID)* (COLON tuple)? SEMIC
+  {
+  Vector<String> msgs = new Vector<String>() ;
+  Tuple t = new Tuple() ;
+  }
+  ID  { msgs.add($ID.text) ;} 
+  (COMMA ID{msgs.add($ID.text);})* (COLON tuple {t = $tuple.value;} )? 
+  {
+    Manager.addMessages (msgs,t);
+  }SEMIC
   ; /*s*/
 
 acts
   :
-  ACT act+
+  ACT act+ 
   ;
 
 /*** action can have no parameter, There is no need to name the param ***/
 act
   :
-  ID (COMMA ID)* (COLON tuple)? SEMIC
+  {Vector <String> ids = new Vector <String> () ;
+  Tuple t = new Tuple() ;}
+  ID { ids.add ($ID.text) ;}
+  (COMMA ID{ids.add($ID.text);})* 
+  (COLON tuple {t = $tuple.value;})? SEMIC
+  {Manager.addActions(ids,t) ;}
   ;
 
 locs
   :
-  LOC ID (COMMA ID)* SEMIC
+  {Vector<String> ids = new Vector <String> () ;}
+  LOC ID {ids.add ($ID.text) ;}
+    (COMMA ID{ids.add($ID.text) ;})* 
+    {Manager.addLocations (ids) ;}SEMIC
+    
   ;
 
 procs
@@ -207,27 +230,37 @@ procs
   PROC proc+
   ; /*s*/
 
-proc
+proc locals [Process p]
   :
-  processDecl EQLS processTerm SEMIC
+  processDecl {$p= Manager.addProcessDeclaration($processDecl.value) ;}EQLS processTerm  {Manager.setProcessTerm ($p,$processTerm.value) ;} SEMIC
   ;
 
 /*** proc section contains a list of process declaration ***/
-processDecl
-  :
-  ID
+processDecl returns [ProcessDeclaration value] locals [String i,String p, String ret;]
+ @init {
+  
+ } :
+  ID {$value = new ProcessDeclaration ($ID.text) ;}
   (
-    LPAREN ID COLON
+    LPAREN ID {$i=$ID.text;}COLON
     (
-      ID
-      | LOCSORT
+      ID {$p=$ID.text;}
+      | LOCSORT{$p=$LOCSORT.text;}
     )
+    { $ret=Manager.addParameterProcessDeclaration ($value,$i,$p);
+      if ( $ret !=null )
+        System.out.println ( $ret) ;
+    }
     (
       COMMA ID ':'
       (
-        ID
-        | LOCSORT
+        ID {$p=$ID.text;}
+        | LOCSORT{$p=$LOCSORT.text;}
       )
+      { $ret=Manager.addParameterProcessDeclaration ($value,$i,$p);
+      if ( $ret !=null )
+        System.out.println ( $ret) ;
+        }
     )*
     RPAREN
   )?
@@ -242,19 +275,22 @@ processDecl
             pName ;
 */
 
-processTerm
+processTerm returns [ProcessTerm value] :
+    processTermChoice {$value=$processTermChoice.value;} ;
+    
+processTermChoice returns [ProcessTerm value]
   :
-  processTermSingle pTP
+  left=processTermSingle right=pTP {$value=new ProcessTermChoice($left.value,$right.value) ;}
   ;
 
-processTermSingle
+processTermSingle returns [ProcessTerm value]
   :
   sum
-  | action DOT processTermSingle
-  | cond POINTER processTerm ORELSE processTermSingle
-  | pName
-  | DELTA
-  | LPAREN processTerm RPAREN
+  | action DOT ap=processTermSingle /*{$value = new ProcessTermAction ($action.value,$ap.value) ;}*/
+  | cond POINTER cl=processTerm ORELSE cr=processTermSingle /*{$value = new ProcessTermConditional($cond.value,$cl.value,$cr.value) ;}*/
+  | pn=pName {$value=$pn.value;}
+  | d=DELTA {$value=new ProcessTermDelta() ;}
+  | LPAREN spt=processTerm RPAREN {$value=$spt.value;}
   ;
 
 sum
@@ -267,9 +303,9 @@ sum
   '.' processTermSingle
   ; /* first ID is a var name and second ID is its sort ***/
 
-pTP
+pTP returns [ProcessTerm value]
   :
-  | PLUS processTermSingle pTP
+  | PLUS l=processTermSingle r=pTP {$value = new ProcessTermChoice ($l.value,$r.value);}
   ;
 /*networkTerm : deploy |
             networkTerm PARAL networkTerm | // || is left associative
@@ -333,15 +369,17 @@ cond
   simpleExpression
   ; /* I made it more efficient  ***/
 
-pName
+pName returns [ProcessTerm value]
   :
-  instance
+  instance {$value =  Manager.instanceToProcessTerm ($instance.value) ;}
   ; /* in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
 
-instance
+instance returns [Instance value]
   :
-  ID (LPAREN simpleExpression (COMMA simpleExpression)* RPAREN)?
-  ; /* a process/action/msg instantiation can have zero/more than one parameter ***/
+  {Vector<SimpleExpression> ses = new Vector<SimpleExpression> () ;}
+  ID (LPAREN l=simpleExpression {ses.add($l.value) ;} (COMMA r=simpleExpression {ses.add($r.value);})* RPAREN)? 
+  {$value=Manager.makeInstance ($ID.text,ses);}
+  ; /* a map/action/process/msg/variable/Function instantiation can have zero/more than one parameter ***/
 
 action
   :
