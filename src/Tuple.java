@@ -24,4 +24,27 @@ public class Tuple {
 		l = new Vector<Sort>();
 	}
 
+	public Tuple(Tuple t) {
+		// TODO Auto-generated constructor stub
+		l = new Vector<Sort>() ;
+		for (Sort s : t.l)
+			l.add(s) ;
+	}
+	@Override
+	public String toString () {
+		String result = "" ;
+		int num = 0 ;
+		for (Sort s : l ) {
+			num ++ ;
+			if ( num == 1 ) 
+				result += " of ";
+			else
+				result += " * " ;
+			result += s.toString() ;
+			
+		}
+		return result ;
+		
+	}
+
 }

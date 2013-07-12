@@ -150,5 +150,28 @@ public class Manager {
 			outln(" # " + v.getName()+ " ");
 			*/
 	}
+	public static void addMessages (Vector<String> ids,Tuple t) {
+		for (String id:ids) {
+			Message m = new Message (id,t) ;
+			MessageSingleton.getInstance().addMessage(m);
+		}
+	}
+	
+	public static void createMsgSort_Msg() {
+		Vector <Message> msgs = MessageSingleton.getInstance().getMessages() ;
+		out ("datatype Msg ");	
+		int numM = 0 ;
+		for (Message m : msgs ) {
+			numM++ ;
+			if ( numM == 1 ) 
+				out ( " = " );
+			else
+				out ( " | " );
+			out (m.getID()) ;
+			outln (m.getParams().toString());
+		}
+	
+	}
+	
 	
 }

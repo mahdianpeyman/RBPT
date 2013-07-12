@@ -29,7 +29,12 @@ public class Sort {
 			return false ;
 		return name .equals (((Sort)s).getName());
 	}
-
+	
+	@Override
+	public String toString () {
+		return name ;
+	}
+	
 
 
 }
