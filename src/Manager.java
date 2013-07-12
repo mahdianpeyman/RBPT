@@ -24,10 +24,14 @@ public class Manager {
 
 	}
 
-	public static void createDatatypesSortsFucntions() {
+	public static void createDatatypesSortsFunctions() {
 		Vector<Sort> sorts = SortSingleton.getInstance().getSorts();
 		Vector<Function> funcs = FunctionSingleton.getInstance().getFunctions();
+		outln() ;
+		outln ( "# All datatypes are created from sorts and funcs" ) ;
 		for (Sort s : sorts) {
+			if (s.getName().equals("Loc"))
+				continue ;
 			out("datatype " + s.getName());
 			int numF = 0;
 			for (Function f : funcs) {
@@ -55,7 +59,7 @@ public class Manager {
 			outln(";");
 		}
 	}
-	
+
 	public static String addMap(String id, Type t) {
 		Map m = new Map(id);
 		m.setType(t);
@@ -63,59 +67,60 @@ public class Manager {
 		return id;
 	}
 
-	
-	public static String addVariables(Vector<String> v,String s){
+	public static String addVariables(Vector<String> v, String s) {
 
-	    Sort tSort = SortSingleton.getInstance().getSort (s) ;
-	    if (tSort == null ) 
-	        return ( "not a valid Sort " ) ;
-	     for (String vName : v)
-	    	 Manager.addVariable ( vName , tSort);
+		Sort tSort = SortSingleton.getInstance().getSort(s);
+		if (tSort == null)
+			return ("not a valid Sort ");
+		for (String vName : v)
+			Manager.addVariable(vName, tSort);
 		return null;
 	}
 
 	public static void addVariable(String vName, Sort vSort) {
-		Variable v = new Variable ( vName, vSort );
+		Variable v = new Variable(vName, vSort);
 		VariableSingleton.getInstance().addVariable(v);
-		
-		
+
 	}
-	
-	public static SimpleExpression setSimpleExpression (String id ){
+
+	public static SimpleExpression setSimpleExpression(String id) {
 		Variable v = VariableSingleton.getInstance().getVariable(id);
 		Function f = FunctionSingleton.getInstance().getFunction(id);
-		Map m = MapSingleton.getInstance().getMap(id) ;
-		if ( v != null )
+		Map m = MapSingleton.getInstance().getMap(id);
+		if (v != null)
 			return new VariableExpression(v);
-		if ( f != null )
+		if (f != null)
 			return new FunctionCallExpression(f);
-		if ( m != null )
+		if (m != null)
 			return new MapCallExpression(m);
 		return null;
 	}
-	public static String simpleExpressionError(String id){
-		return  id +" in simpleExpression is not a variable/function/map ! " ;
+
+	public static String simpleExpressionError(String id) {
+		return id + " in simpleExpression is not a variable/function/map ! ";
 	}
-	
-	public static void addEquation (SimpleExpression left, SimpleExpression right) {
-		Equation e = new Equation(left,right) ;
-		EquationSingleton.getInstance().addEquation(e) ;	
+
+	public static void addEquation(SimpleExpression left, SimpleExpression right) {
+		Equation e = new Equation(left, right);
+		EquationSingleton.getInstance().addEquation(e);
 	}
+
 	public static void createMLFuncEQN() {
-		Vector<Map> maps = MapSingleton.getInstance().getMaps() ;
+		Vector<Map> maps = MapSingleton.getInstance().getMaps();
 		for (Map m : maps) {
-			Vector<Equation>eqns = EquationSingleton.getInstance().getRelatedEquation(m) ; 
-			outln () ;
-			outln("# equations of " + m.getName()) ;
-			int numE = 0 ;
-			for (Equation e : eqns ) {
-				numE ++ ;
-				if ( numE == 1 ) 
-					out ("fun ");
+			Vector<Equation> eqns = EquationSingleton.getInstance()
+					.getRelatedEquation(m);
+			outln();
+			outln("# equations of " + m.getName());
+			int numE = 0;
+			for (Equation e : eqns) {
+				numE++;
+				if (numE == 1)
+					out("fun ");
 				else
-					out ( " | ");
-				printMLEqn ( e ) ;
-				
+					out(" | ");
+				printMLEqn(e);
+
 				outln();
 			}
 			outln(" ; ");
@@ -123,55 +128,151 @@ public class Manager {
 	}
 
 	private static void printMLEqn(Equation e) {
-		printMLSimpleExpression (e.getLeft()) ;
-		out ( " = ") ;
-		printMLSimpleExpression (e.getRight()) ;
-		
+		printMLSimpleExpression(e.getLeft());
+		out(" = ");
+		printMLSimpleExpression(e.getRight());
+
 	}
 
 	private static void printMLSimpleExpression(SimpleExpression se) {
 		out(se.toString());
-		
+
 	}
 
 	private static void out(String string) {
-		System.out.print(string) ;		
+		System.out.print(string);
 	}
+
 	private static void outln(String string) {
-		System.out.println(string) ;		
+		System.out.println(string);
 	}
+
 	private static void outln() {
-		System.out.println() ;		
-	}	
-	
-	public static void createVars() {
-		/*Vector<Variable> vars = VariableSingleton.getInstance().getVariables();
-		for (Variable v : vars)
-			outln(" # " + v.getName()+ " ");
-			*/
+		System.out.println();
 	}
-	public static void addMessages (Vector<String> ids,Tuple t) {
-		for (String id:ids) {
-			Message m = new Message (id,t) ;
+
+	public static void createVars() {
+		/*
+		 * Vector<Variable> vars =
+		 * VariableSingleton.getInstance().getVariables(); for (Variable v :
+		 * vars) outln(" # " + v.getName()+ " ");
+		 */
+	}
+
+	public static void addMessages(Vector<String> ids, Tuple t) {
+		for (String id : ids) {
+			Message m = new Message(id, t);
 			MessageSingleton.getInstance().addMessage(m);
 		}
 	}
-	
+
 	public static void createMsgSort_Msg() {
-		Vector <Message> msgs = MessageSingleton.getInstance().getMessages() ;
-		out ("datatype Msg ");	
-		int numM = 0 ;
-		for (Message m : msgs ) {
-			numM++ ;
-			if ( numM == 1 ) 
-				out ( " = " );
+		Vector<Message> msgs = MessageSingleton.getInstance().getMessages();
+		outln();
+		outln("# Msg created from msgs rule");
+		out("datatype Msg ");
+		int numM = 0;
+		for (Message m : msgs) {
+			numM++;
+			if (numM == 1)
+				out(" = ");
 			else
-				out ( " | " );
-			out (m.getID()) ;
-			outln (m.getParams().toString());
+				out(" | ");
+			out(m.getID());
+			outln(m.getParams().toString());
 		}
+		outln(" ; ");
+
+	}
+
+	public static void addActions(Vector<String> ids, Tuple t) {
+		for (String id : ids) {
+			Action a = new Action(id, t);
+			ActionSingleton.getInstance().addAction(a);
+		}
+	}
+
+	public static void createActionSortAction() {
+		Vector<Action> acts = ActionSingleton.getInstance().getActions();
+		outln();
+		outln("# Action created from acts rule");
+		out("datatype Action ");
+		int num = 0;
+		for (Action a : acts) {
+			num++;
+			if (num == 1)
+				out(" = ");
+			else
+				out(" | ");
+			out(a.getId());
+			outln(a.getParams().toString());
+		}
+		outln(" ; ");
+	}
+	public static void addLocations (Vector<String> ids) {
+		for ( String id :ids ) {
+			Location l = new Location (id ) ;
+			LocationSingleton.getInstance() .addLocation ( l ) ;
+		}
+	}
+	public static void createLocSortLocs() {
+		Vector <Location> locs = LocationSingleton.getInstance().getLocations() ;
+		outln () ;
+		outln ( "# Loc from locs") ;
+		out ( "datatype Loc ") ;
+		int num = 0 ;
+		for ( Location l : locs) {
+			num ++ ;
+			if ( num == 1 ) 
+				out ( " = " ) ;
+			else
+				out ( " | " ) ;
+			out (l.getId()) ;
+		}
+		outln ( " ; " ) ;
+	}
+
 	
+	public static String addParameterProcessDeclaration(ProcessDeclaration pd,String id,String sortStr) {
+		Sort sort = SortSingleton.getInstance().getSort(sortStr);
+		if (sort == null ) 
+			return sortStr + " is not a sort";
+		pd.addParam(id, sort);
+		return null;
+	}
+	public static Instance makeInstance ( String id , Vector<SimpleExpression> ses){
+		Function func = FunctionSingleton.getInstance().getFunction(id) ;
+		if (func!=null)
+			return new InstanceFunction (func,ses) ;
+		Map map = MapSingleton.getInstance().getMap(id) ;
+		if (map!=null) 
+			return new InstanceMap (map,ses);
+		Action act = ActionSingleton.getInstance().getAction(id) ;
+		if (act!=null)
+			return new InstanceAction (act,ses);
+		Process proc = ProcessSingleton.getInstance().getProcess(id) ;
+		if ( proc!=null){
+			return new InstanceProcess (proc,ses);
+		}
+		Message msg = MessageSingleton.getInstance().getMessage(id) ;
+		if ( msg!=null)
+			return new InstanceMessage (msg,ses) ;
+		Variable var = VariableSingleton.getInstance().getVariable(id) ;
+		if (var!=null) 
+			return new InstanceVariable (var,ses) ;
+		outln( id + " is not a valied instance ! " ) ;
+		return null;
+	}
+	public static ProcessTerm instanceToProcessTerm(Instance ins) {
+		return new ProcessTermInstance(ins) ;
+	}
+	public static void setProcessTerm ( Process p , ProcessTerm term ) {
+		p.setTerm(term) ;
 	}
 	
-	
+	public static Process addProcessDeclaration (ProcessDeclaration declaration) {
+		Process p = new Process (declaration );
+		ProcessSingleton.getInstance().addProcess(p ) ;
+		return p;
+	}
 }

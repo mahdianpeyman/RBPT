@@ -23,6 +23,12 @@ public class MessageSingleton {
 	public Vector <Message> getMessages ( ) {
 		return msgs ;
 	}
+	public Message getMessage(String id) {
+		for ( Message m : msgs)
+			if (m.getID().equals(id))
+				return m ;	
+		return null;
+	}
 	
 
 }
