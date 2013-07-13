@@ -17,14 +17,7 @@ public class Type {
 		second = s ;
 	}
 	
-	public String setSecond (String str ) {
-		Sort tempS = SortSingleton.getInstance().getSort (str) ;
-	      if (tempS == null ) 
-	        return ( "Error" + str + "not a valid Sort " ) ;
-	      else
-	           setSecond(tempS) ;
-	      return null;
-	}
+	
 	public Type () {
 		first = new Tuple() ;
 		
@@ -32,6 +25,8 @@ public class Type {
 	public Type(Sort sort) {
 		first = new Tuple() ;
 		second = sort;
-		// TODO Auto-generated constructor stub
+	}
+	public Type(Tuple tuple) {
+		setFirst(tuple) ;
 	}
 }

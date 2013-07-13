@@ -9,9 +9,6 @@ public abstract class SimpleExpression {
 	public SimpleExpression(){
 		setExprs(new Vector <SimpleExpression> ()) ;
 	}
-	public SimpleExpression(SimpleExpression s){
-		
-	}
 
 	public String getID() {
 		return ID;

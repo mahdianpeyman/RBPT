@@ -10,8 +10,8 @@ public class Manager {
 	};
 
 	public static String addFunction(String id, Type t) {
-	
-		FunctionSingleton.getInstance().addFunction(id,t);
+
+		FunctionSingleton.getInstance().addFunction(id, t);
 		return id;
 	}
 
@@ -65,14 +65,12 @@ public class Manager {
 		return id;
 	}
 
-	public static String addVariables(Vector<String> v, String s) {
-
+	public static void addVariables(Vector<String> v, String s) {
 		Sort tSort = SortSingleton.getInstance().getSort(s);
 		if (tSort == null)
-			return (" Error : " + s + " is not a valid Sort ");
+			errln (" Error : " + s + " is not a valid Sort ");
 		for (String vName : v)
 			Manager.addVariable(vName, tSort);
-		return null;
 	}
 
 	public static Variable addVariable(String vName, Sort vSort) {
@@ -86,10 +84,12 @@ public class Manager {
 		Map m = MapSingleton.getInstance().getMap(id);
 		if (v != null)
 			return new VariableExpression(v);
-		if (f != null)
+		else if (f != null)
 			return new FunctionCallExpression(f);
-		if (m != null)
+		else if (m != null)
 			return new MapCallExpression(m);
+		else 
+			simpleExpressionError(id) ;
 		return null;
 	}
 
@@ -136,7 +136,6 @@ public class Manager {
 
 	}
 
-	
 	public static void addMessages(Vector<String> ids, Tuple t) {
 		for (String id : ids) {
 			Message m = new Message(id, t);
@@ -191,8 +190,8 @@ public class Manager {
 	public static void addLocations(Vector<String> ids) {
 		for (String id : ids) {
 			LocationSingleton.getInstance().addLocation(id);
-			Sort loc = SortSingleton.getInstance().getSort("Loc") ;
-			FunctionSingleton.getInstance().addFunction(id, new Type(loc) );
+			Sort loc = SortSingleton.getInstance().getSort("Loc");
+			FunctionSingleton.getInstance().addFunction(id, new Type(loc));
 		}
 	}
 
@@ -282,45 +281,70 @@ public class Manager {
 		addVariable(id, sort);
 
 	}
-	
-	
-	public static NetworkTerm retNetworkTermParallel( NetworkTerm left, NetworkTerm right) {
-		return new NetworkTermParallel(left,right) ;
+
+	public static NetworkTerm retNetworkTermParallel(NetworkTerm left,
+			NetworkTerm right) {
+		return new NetworkTermParallel(left, right);
 	}
-	
-	public static NetworkTerm retNetworkTermDeploy(String locS,ProcessTerm term){
-		Location loc = LocationSingleton.getInstance().getLocaiton (locS) ;
-		if ( loc == null ) 
-			out ( "Error : " +locS+ " in NetworkTermDeploy is not a Location ");
-		return new NetworkTermDeploy(loc,term) ;
-	}
-	
-	public static NetworkTerm retNetworkTermHide(String locS,NetworkTerm term) {
+
+	public static NetworkTerm retNetworkTermDeploy(String locS, ProcessTerm term) {
 		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
-		if ( loc == null ) 
-			out ("Error : " +locS+ " in NetworkTermHide is not a location") ;
-		return new NetworkTermHide(loc,term) ;
+		if (loc == null)
+			out("Error : " + locS + " in NetworkTermDeploy is not a Location ");
+		return new NetworkTermDeploy(loc, term);
 	}
-	
-	public static NetworkTerm retNetworkTermEncap ( String id , NetworkTerm term ) {
-		Message m = MessageSingleton.getInstance().getMessage(id) ;
-		if ( m == null ) 
-			out ("Error : " +id+ " in NetworkTermEncap is not a message constructor") ;
-		return new NetworkTermEncap (m,term);
+
+	public static NetworkTerm retNetworkTermHide(String locS, NetworkTerm term) {
+		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
+		if (loc == null)
+			out("Error : " + locS + " in NetworkTermHide is not a location");
+		return new NetworkTermHide(loc, term);
 	}
-	
-	public static NetworkTerm retNetworkTermAbs( String id , NetworkTerm term){
-		Message m = MessageSingleton.getInstance().getMessage(id) ;
-		if ( m == null ) 
-			out ("Error : " +id+ " in NetworkTermAbs is not a message constructor") ;
-		return new NetworkTermAbs(m,term) ;
+
+	public static NetworkTerm retNetworkTermEncap(String id, NetworkTerm term) {
+		Message m = MessageSingleton.getInstance().getMessage(id);
+		if (m == null)
+			out("Error : " + id
+					+ " in NetworkTermEncap is not a message constructor");
+		return new NetworkTermEncap(m, term);
 	}
-	
+
+	public static NetworkTerm retNetworkTermAbs(String id, NetworkTerm term) {
+		Message m = MessageSingleton.getInstance().getMessage(id);
+		if (m == null)
+			errln("Error : " + id
+					+ " in NetworkTermAbs is not a message constructor");
+		return new NetworkTermAbs(m, term);
+	}
+
 	public static void setInitial(NetworkTerm term) {
 		InitialSingleton.getInstance().setNetworkTerm(term);
 	}
+	public static Type retType () {
+		return new Type () ;
+	}
+	public static void setTypeFirst(Type type ,Tuple tuple) {
+		type.setFirst(tuple);
+	}
 	
-	
+	public static Tuple retTupleSortList (Vector<String> strs ){
+		Tuple t= new Tuple () ;
+		for (String str :strs ) {
+			Sort s = SortSingleton.getInstance().getSort(str) ;
+			if ( s == null )
+				errln("Error :" +str+ "in Tuple is not a Sort/Loc");
+		}
+		return t ;
+	}
+	///////////////////////
+
+	public static void setTypeSecond(Type type, String str) {
+		Sort sort = SortSingleton.getInstance().getSort(str);
+		if (sort == null)
+			errln ("Error" + str + "not a valid Sort ");
+		else
+			type.setSecond(sort);
+	}
 
 	public static Context enterContext() {
 		Context c = ContextSingleton.getInstance().enterContext();
@@ -331,7 +355,7 @@ public class Manager {
 	private static void ctraceEnter(int id) {
 		for (int i = 0; i < id + 1; i++)
 			err(" ");
-		errln(" -> " +id);
+		errln(" -> " + id);
 	}
 
 	public static Context exitContext() {
@@ -344,22 +368,25 @@ public class Manager {
 	private static void ctraceExit(int id) {
 		for (int i = 0; i < id + 1; i++)
 			err(" ");
-		errln(" <- " +id);
+		errln(" <- " + id);
 	}
-	private static void err (String str ) {
-		//System.out.print( str ) ;
+
+	private static void err(String str) {
+		// System.out.print( str ) ;
 	}
-	private static void errln ( String str ) {
-		err (str) ;errln () ;
+
+	private static void errln(String str) {
+		err(str);
+		errln();
 	}
 
 	private static void errln() {
-		err ("\n") ;
-		
+		err("\n");
+
 	}
-	
+
 	private static void out(String string) {
-		 System.out.print(string);
+		System.out.print(string);
 	}
 
 	private static void outln(String string) {

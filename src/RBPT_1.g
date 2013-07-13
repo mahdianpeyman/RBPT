@@ -79,11 +79,11 @@ map
 
 type returns [Type value] locals [String tS=""]
 @init {
-$value = new Type();
+  $value=Manager.retType () ;
 }
   :
   (tuple {
-    $value.setFirst($tuple.value) ;
+    Manager.setTypeFirst($value,$tuple.value);
   })?
   POINTER
   (
@@ -91,41 +91,28 @@ $value = new Type();
     | LOCSORT {$tS = $ID.text;}
   )
   {
-      String ret = $value.setSecond ($tS) ;
-      if ( ret != null ) 
-        System.out.println( ret ) ;  
+      Manager.setTypeSecond($value,$tS) ;  
   }
   ;
 
 /*** return type should be of a sort ('Loc' is a predefined sort), it should be checked in semantics ***/ /*s? does'nt ID match 'Loc' ? */
 tuple returns [Tuple value] locals [String tS=""]
-@init {
-$value = new Tuple();
-}
+
   :
+  {Vector <String> strs = new Vector <String>();}
   (
     ID {$tS = $ID.text;}
     | LOCSORT {$tS = $LOCSORT.text;}
   )
-  {
-      String ret = $value.addSort($tS)  ;
-      if ( ret != null )
-        System.out.println (ret) ;
-      
-  }
+  { strs.add($tS) ;}
   (
     SHARP
     (
     ID {$tS = $ID.text;}
     | LOCSORT {$tS = $LOCSORT.text;}
   )
-  {
-      ret = $value.addSort($tS)  ;
-      if ( ret != null)
-        System.out.println (ret) ;
-      
-  }
-  )*
+  { strs.add($tS) ;}
+  )*{ $value = Manager.retTupleSortList(strs) ;}
   ;
 
 /*** I removed ID in definition of Type***/
@@ -147,9 +134,7 @@ var locals[String tS=""]
     | LOCSORT {$tS=$LOCSORT.text;}
   )
   {
-    String ret = Manager.addVariables(tempV,$tS) ;
-    if ( ret != null ) 
-        System.out.println( ret) ; 
+    Manager.addVariables(tempV,$tS) ; 
   }
   SEMIC
   ; /*swhy Loc for the actual type? */
@@ -169,18 +154,11 @@ simpleExpression returns [SimpleExpression value]
 @init {
 }
   :
-  ID 
-  {
-    SimpleExpression se = Manager.setSimpleExpression($ID.text);
-    if ( se == null ) 
-      System.out.println ( Manager.simpleExpressionError($ID.text) ) ;
-    else
-      $value = se ;
-    
-  }
-  (LPAREN left=simpleExpression {$value.addExpr($left.value);}
-    (COMMA right=simpleExpression {$value.addExpr($right.value);})* 
-  RPAREN)?
+  ID {$value = Manager.setSimpleExpression ($ID.text);}
+  | (ID {$value = Manager.setSimpleExpression($ID.text); }
+      LPAREN left=simpleExpression {$value.addExpr($left.value);}
+      (COMMA right=simpleExpression {$value.addExpr($right.value);})* 
+  RPAREN)
   ;
 
 msgs
@@ -312,8 +290,14 @@ sum returns [ProcessTerm value]
   ; /* first ID is a var name and second ID is its sort ***/
 
 pTP returns [ProcessTerm value]
+@init{
+  $value = null ;
+}
   :
-  | PLUS l=processTermSingle r=pTP {$value = new ProcessTermChoice ($l.value,$r.value);}
+  | PLUS l=processTermSingle r=pTP 
+    { if ($pTP.value != null) $value = new ProcessTermChoice ($l.value,$r.value);
+      else $value = $l.value ;
+    }
   ;
 /*networkTerm : deploy |
             networkTerm PARAL networkTerm | // || is left associative
@@ -323,48 +307,60 @@ pTP returns [ProcessTerm value]
 */
 
 
-networkTerm
+networkTerm returns [NetworkTerm value]
   :
-  networkTermSingle nTP
+  par=networkTermParallel {$value = $par.value;}
   ;
 
-networkTermSingle
-  :
-  deploy
-  | hide
-  | encap
-  | abs
-  | LPAREN networkTerm RPAREN
+networkTermParallel returns [NetworkTerm value]:
+  l=networkTermSingle r=nTP
+  {if ($nTP.value != null) $value =Manager.retNetworkTermParallel ($l.value,$r.value);
+   else $value = $l.value ;}
   ;
 
-nTP
+networkTermSingle returns [NetworkTerm value]
   :
-  | PARAL networkTermSingle nTP
+  (deploy {$value=$deploy.value;}
+  | hide {$value=$hide.value;}
+  | encap {$value=$encap.value;}
+  | s=abs {$value=$abs.value;}
+  | LPAREN nt=networkTerm {$value=$nt.value;} RPAREN)
+  
   ;
 
-deploy
-  :
-  DEPLOY LPAREN ID COMMA processTerm RPAREN
+nTP returns [NetworkTerm value] 
+@init{
+$value = null ;
+}
+:
+  | PARAL l=networkTermSingle r=nTP
+  {if ($nTP.value != null) $value =Manager.retNetworkTermParallel ($l.value,$r.value);
+   else $value = $l.value ;}
   ;
 
-hide
+deploy returns [NetworkTerm value]
   :
-  HIDE LPAREN ID COMMA networkTerm RPAREN
+  DEPLOY LPAREN ID COMMA processTerm RPAREN {Manager.retNetworkTermDeploy($ID.text,$processTerm.value);}
   ; /* ID is of 'Loc' type, it should be checked in semantics */
 
-encap
+hide returns [NetworkTerm value]
   :
-  ENCAP LPAREN ID COMMA networkTerm RPAREN
+  HIDE LPAREN ID COMMA networkTerm RPAREN {Manager.retNetworkTermHide($ID.text,$networkTerm.value);}
+  ; /* ID is of 'Loc' type, it should be checked in semantics */
+
+encap returns [NetworkTerm value]
+  :
+  ENCAP LPAREN ID COMMA networkTerm RPAREN {Manager.retNetworkTermEncap ($ID.text,$networkTerm.value);}
   ; /* ID is a message constructor, it should be checked in semantics */
 
-abs
+abs returns [NetworkTerm value]
   :
-  ABS LPAREN ID COMMA networkTerm RPAREN
+  ABS LPAREN ID COMMA networkTerm RPAREN {Manager.retNetworkTermAbs ($ID.text,$networkTerm.value);}
   ; /* ID is a message constructor, it should be checked in semantics */
 
 init
   :
-  INIT networkTerm SEMIC
+  INIT networkTerm {Manager.setInitial($networkTerm.value);} SEMIC
   ;
 
 /*** I added the reserved word and the ending ; ***/
