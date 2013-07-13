@@ -282,6 +282,45 @@ public class Manager {
 		addVariable(id, sort);
 
 	}
+	
+	
+	public static NetworkTerm retNetworkTermParallel( NetworkTerm left, NetworkTerm right) {
+		return new NetworkTermParallel(left,right) ;
+	}
+	
+	public static NetworkTerm retNetworkTermDeploy(String locS,ProcessTerm term){
+		Location loc = LocationSingleton.getInstance().getLocaiton (locS) ;
+		if ( loc == null ) 
+			out ( "Error : " +locS+ " in NetworkTermDeploy is not a Location ");
+		return new NetworkTermDeploy(loc,term) ;
+	}
+	
+	public static NetworkTerm retNetworkTermHide(String locS,NetworkTerm term) {
+		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
+		if ( loc == null ) 
+			out ("Error : " +locS+ " in NetworkTermHide is not a location") ;
+		return new NetworkTermHide(loc,term) ;
+	}
+	
+	public static NetworkTerm retNetworkTermEncap ( String id , NetworkTerm term ) {
+		Message m = MessageSingleton.getInstance().getMessage(id) ;
+		if ( m == null ) 
+			out ("Error : " +id+ " in NetworkTermEncap is not a message constructor") ;
+		return new NetworkTermEncap (m,term);
+	}
+	
+	public static NetworkTerm retNetworkTermAbs( String id , NetworkTerm term){
+		Message m = MessageSingleton.getInstance().getMessage(id) ;
+		if ( m == null ) 
+			out ("Error : " +id+ " in NetworkTermAbs is not a message constructor") ;
+		return new NetworkTermAbs(m,term) ;
+	}
+	
+	public static void setInitial(NetworkTerm term) {
+		InitialSingleton.getInstance().setNetworkTerm(term);
+	}
+	
+	
 
 	public static Context enterContext() {
 		Context c = ContextSingleton.getInstance().enterContext();

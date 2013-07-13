@@ -23,6 +23,13 @@ public class LocationSingleton {
 	public Vector <Location> getLocations ( ) {
 		return locs ;
 	}
+	public Location getLocaiton(String locS2) {
+		for (Location l:locs) 
+			if (l.getId().equals(locS2)) 
+				return l ;
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }
