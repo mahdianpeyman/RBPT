@@ -285,22 +285,23 @@ processTermChoice returns [ProcessTerm value]
 
 processTermSingle returns [ProcessTerm value]
   :
-  sum
-  | action DOT ap=processTermSingle /*{$value = new ProcessTermAction ($action.value,$ap.value) ;}*/
-  | cond POINTER cl=processTerm ORELSE cr=processTermSingle /*{$value = new ProcessTermConditional($cond.value,$cl.value,$cr.value) ;}*/
+  sum {$value = $sum.value ;}
+  | action DOT ap=processTermSingle {$value = new ProcessTermAction ($action.value,$ap.value) ;}
+  | cond POINTER cl=processTerm ORELSE cr=processTermSingle {$value = new ProcessTermConditional($cond.value,$cl.value,$cr.value) ;}
   | pn=pName {$value=$pn.value;}
   | d=DELTA {$value=new ProcessTermDelta() ;}
   | LPAREN spt=processTerm RPAREN {$value=$spt.value;}
   ;
 
-sum
+sum returns [ProcessTerm value]
   :
-  SUM ID COLON
+  {String var,sort ;}
+  SUM ID {var = $ID.text;}COLON
   (
-    ID
-    | LOCSORT
+    ID {sort=$ID.text;}
+    | LOCSORT {sort=$LOCSORT.text;}
   )
-  '.' processTermSingle
+  '.' pts=processTermSingle {$value = Manager.retProcessTermSum  (var,sort,$pts.value) ;}
   ; /* first ID is a var name and second ID is its sort ***/
 
 pTP returns [ProcessTerm value]
@@ -364,9 +365,9 @@ init
     a.p > cond > sum > +
 */
 
-cond
+cond returns [SimpleExpression value]
   :
-  simpleExpression
+  simpleExpression {$value= $simpleExpression.value ;}
   ; /* I made it more efficient  ***/
 
 pName returns [ProcessTerm value]
@@ -381,11 +382,18 @@ instance returns [Instance value]
   {$value=Manager.makeInstance ($ID.text,ses);}
   ; /* a map/action/process/msg/variable/Function instantiation can have zero/more than one parameter ***/
 
-action
+action returns [ActionUse value]
   :
-  instance
-  | SND LPAREN instance RPAREN
-  | RCV LPAREN instance RPAREN
+  instance {$value = new ActionUseInstance ($instance.value) ;}
+  | sndAction {$value = $sndAction.value ;}
+  | rcvAction {$value = $rcvAction.value ;}
+  ;
+
+sndAction returns [ActionUse value] :
+  SND LPAREN instance RPAREN {$value = new ActionUseSnd ( $instance.value ) ;}
+  ;
+rcvAction returns [ActionUse value]:
+  RCV LPAREN instance RPAREN {$value = new ActionUseRcv ($instance.value) ;}
   ;
 /* in semantics, action instantiation should be checked ***/
 /* in semantics, msg instantiation should be checked ***/

@@ -1,5 +1,7 @@
-import java.awt.print.Printable;
+
 import java.util.Vector;
+
+
 
 public class Manager {
 	public int a;
@@ -27,11 +29,11 @@ public class Manager {
 	public static void createDatatypesSortsFunctions() {
 		Vector<Sort> sorts = SortSingleton.getInstance().getSorts();
 		Vector<Function> funcs = FunctionSingleton.getInstance().getFunctions();
-		outln() ;
-		outln ( "# All datatypes are created from sorts and funcs" ) ;
+		outln();
+		outln("# All datatypes are created from sorts and funcs");
 		for (Sort s : sorts) {
 			if (s.getName().equals("Loc"))
-				continue ;
+				continue;
 			out("datatype " + s.getName());
 			int numF = 0;
 			for (Function f : funcs) {
@@ -209,70 +211,82 @@ public class Manager {
 		}
 		outln(" ; ");
 	}
-	public static void addLocations (Vector<String> ids) {
-		for ( String id :ids ) {
-			Location l = new Location (id ) ;
-			LocationSingleton.getInstance() .addLocation ( l ) ;
+
+	public static void addLocations(Vector<String> ids) {
+		for (String id : ids) {
+			Location l = new Location(id);
+			LocationSingleton.getInstance().addLocation(l);
 		}
-	}
-	public static void createLocSortLocs() {
-		Vector <Location> locs = LocationSingleton.getInstance().getLocations() ;
-		outln () ;
-		outln ( "# Loc from locs") ;
-		out ( "datatype Loc ") ;
-		int num = 0 ;
-		for ( Location l : locs) {
-			num ++ ;
-			if ( num == 1 ) 
-				out ( " = " ) ;
-			else
-				out ( " | " ) ;
-			out (l.getId()) ;
-		}
-		outln ( " ; " ) ;
 	}
 
-	
-	public static String addParameterProcessDeclaration(ProcessDeclaration pd,String id,String sortStr) {
+	public static void createLocSortLocs() {
+		Vector<Location> locs = LocationSingleton.getInstance().getLocations();
+		outln();
+		outln("# Loc from locs");
+		out("datatype Loc ");
+		int num = 0;
+		for (Location l : locs) {
+			num++;
+			if (num == 1)
+				out(" = ");
+			else
+				out(" | ");
+			out(l.getId());
+		}
+		outln(" ; ");
+	}
+
+	public static String addParameterProcessDeclaration(ProcessDeclaration pd,
+			String id, String sortStr) {
 		Sort sort = SortSingleton.getInstance().getSort(sortStr);
-		if (sort == null ) 
+		if (sort == null)
 			return sortStr + " is not a sort";
 		pd.addParam(id, sort);
 		return null;
 	}
-	public static Instance makeInstance ( String id , Vector<SimpleExpression> ses){
-		Function func = FunctionSingleton.getInstance().getFunction(id) ;
-		if (func!=null)
-			return new InstanceFunction (func,ses) ;
-		Map map = MapSingleton.getInstance().getMap(id) ;
-		if (map!=null) 
-			return new InstanceMap (map,ses);
-		Action act = ActionSingleton.getInstance().getAction(id) ;
-		if (act!=null)
-			return new InstanceAction (act,ses);
-		Process proc = ProcessSingleton.getInstance().getProcess(id) ;
-		if ( proc!=null){
-			return new InstanceProcess (proc,ses);
+
+	public static Instance makeInstance(String id, Vector<SimpleExpression> ses) {
+		Function func = FunctionSingleton.getInstance().getFunction(id);
+		if (func != null)
+			return new InstanceFunction(func, ses);
+		Map map = MapSingleton.getInstance().getMap(id);
+		if (map != null)
+			return new InstanceMap(map, ses);
+		Action act = ActionSingleton.getInstance().getAction(id);
+		if (act != null)
+			return new InstanceAction(act, ses);
+		Process proc = ProcessSingleton.getInstance().getProcess(id);
+		if (proc != null) {
+			return new InstanceProcess(proc, ses);
 		}
-		Message msg = MessageSingleton.getInstance().getMessage(id) ;
-		if ( msg!=null)
-			return new InstanceMessage (msg,ses) ;
-		Variable var = VariableSingleton.getInstance().getVariable(id) ;
-		if (var!=null) 
-			return new InstanceVariable (var,ses) ;
-		outln( id + " is not a valied instance ! " ) ;
+		Message msg = MessageSingleton.getInstance().getMessage(id);
+		if (msg != null)
+			return new InstanceMessage(msg, ses);
+		Variable var = VariableSingleton.getInstance().getVariable(id);
+		if (var != null)
+			return new InstanceVariable(var, ses);
+		outln(id + " is not a valied instance ! ");
 		return null;
 	}
+
 	public static ProcessTerm instanceToProcessTerm(Instance ins) {
-		return new ProcessTermInstance(ins) ;
+		return new ProcessTermInstance(ins);
 	}
-	public static void setProcessTerm ( Process p , ProcessTerm term ) {
-		p.setTerm(term) ;
+
+	public static void setProcessTerm(Process p, ProcessTerm term) {
+		p.setTerm(term);
 	}
-	
-	public static Process addProcessDeclaration (ProcessDeclaration declaration) {
-		Process p = new Process (declaration );
-		ProcessSingleton.getInstance().addProcess(p ) ;
+
+	public static Process addProcessDeclaration(ProcessDeclaration declaration) {
+		Process p = new Process(declaration);
+		ProcessSingleton.getInstance().addProcess(p);
 		return p;
+	}
+
+	public static ProcessTerm retProcessTermSum (String varStr,String sortStr,ProcessTerm pt) {
+		Sort sort = SortSingleton.getInstance().getSort(sortStr) ;
+		if ( sort == null ) 
+			outln ("Error : in sum context the second ID is not a Sort" ) ;
+		return new ProcessTermSum (varStr,sort,pt) ;
 	}
 }

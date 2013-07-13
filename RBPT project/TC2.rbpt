@@ -5,8 +5,7 @@ sort
 cons
    true, false : -> Bool;
 map
-   not : Bool -> Bool;
-   and : Bool # Bool -> Bool;
+   not : Bool -> Bool;	
 
 eqn
   not(true) = false;
