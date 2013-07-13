@@ -15,8 +15,9 @@ public class LocationSingleton {
 		}
 		return instance ;
 	}
-	public void addLocation ( Location s ) {
-		locs.add(s) ;
+	public void addLocation ( String id ) {
+		Location l = new Location(id);
+		locs.add(l) ;
 	}
 	
 	public Vector <Location> getLocations ( ) {

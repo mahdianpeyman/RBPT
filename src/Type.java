@@ -20,7 +20,7 @@ public class Type {
 	public String setSecond (String str ) {
 		Sort tempS = SortSingleton.getInstance().getSort (str) ;
 	      if (tempS == null ) 
-	        return ( "not a valid Sort " ) ;
+	        return ( "Error" + str + "not a valid Sort " ) ;
 	      else
 	           setSecond(tempS) ;
 	      return null;
@@ -28,5 +28,10 @@ public class Type {
 	public Type () {
 		first = new Tuple() ;
 		
+	}
+	public Type(Sort sort) {
+		first = new Tuple() ;
+		second = sort;
+		// TODO Auto-generated constructor stub
 	}
 }

@@ -14,7 +14,7 @@ public class Tuple {
 	public String addSort(String str) {
 		Sort tempS = SortSingleton.getInstance().getSort(str);
 		if (tempS == null)
-			return ("not a valid Sort ");
+			return ("Error " + str+ "not a valid Sort ");
 		addSort(tempS);
 		return null  ;
 

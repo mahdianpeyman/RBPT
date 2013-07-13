@@ -15,6 +15,7 @@ import java.util.*;
 
 program
   :
+  {Manager.enterContext () ;}
   (
     sorts
     | funcs
@@ -27,8 +28,9 @@ program
   {Manager.createMsgSort_Msg();}
   {Manager.createLocSortLocs() ;}
   {Manager.createActionSortAction() ;}
-  {Manager.createVars () ;}
+  //{Manager.createVars () ;}
   {Manager.createMLFuncEQN () ;}
+  {Manager.exitContext() ;}
   ;
 
 sorts
@@ -232,7 +234,10 @@ procs
 
 proc locals [Process p]
   :
-  processDecl {$p= Manager.addProcessDeclaration($processDecl.value) ;}EQLS processTerm  {Manager.setProcessTerm ($p,$processTerm.value) ;} SEMIC
+  {Manager.enterContext();}
+  processDecl {$p= Manager.addProcessDeclaration($processDecl.value) ;}
+    EQLS processTerm  {Manager.setProcessTerm ($p,$processTerm.value) ;} SEMIC
+  {Manager.exitContext();}
   ;
 
 /*** proc section contains a list of process declaration ***/
@@ -252,7 +257,7 @@ processDecl returns [ProcessDeclaration value] locals [String i,String p, String
         System.out.println ( $ret) ;
     }
     (
-      COMMA ID ':'
+      COMMA ID {$i=$ID.text;} ':'
       (
         ID {$p=$ID.text;}
         | LOCSORT{$p=$LOCSORT.text;}
@@ -295,13 +300,15 @@ processTermSingle returns [ProcessTerm value]
 
 sum returns [ProcessTerm value]
   :
+  {Manager.enterContext() ;}
   {String var,sort ;}
   SUM ID {var = $ID.text;}COLON
   (
     ID {sort=$ID.text;}
     | LOCSORT {sort=$LOCSORT.text;}
-  )
+  ) {Manager.addProcessTermSumVariable (var,sort);}
   '.' pts=processTermSingle {$value = Manager.retProcessTermSum  (var,sort,$pts.value) ;}
+  {Manager.exitContext();}
   ; /* first ID is a var name and second ID is its sort ***/
 
 pTP returns [ProcessTerm value]

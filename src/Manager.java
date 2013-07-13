@@ -1,7 +1,4 @@
-
 import java.util.Vector;
-
-
 
 public class Manager {
 	public int a;
@@ -13,9 +10,8 @@ public class Manager {
 	};
 
 	public static String addFunction(String id, Type t) {
-		Function f = new Function(id);
-		f.setType(t);
-		FunctionSingleton.getInstance().addFunction(f);
+	
+		FunctionSingleton.getInstance().addFunction(id,t);
 		return id;
 	}
 
@@ -73,16 +69,15 @@ public class Manager {
 
 		Sort tSort = SortSingleton.getInstance().getSort(s);
 		if (tSort == null)
-			return ("not a valid Sort ");
+			return (" Error : " + s + " is not a valid Sort ");
 		for (String vName : v)
 			Manager.addVariable(vName, tSort);
 		return null;
 	}
 
-	public static void addVariable(String vName, Sort vSort) {
-		Variable v = new Variable(vName, vSort);
-		VariableSingleton.getInstance().addVariable(v);
-
+	public static Variable addVariable(String vName, Sort vSort) {
+		return VariableSingleton.getInstance().addVariable(vName, vSort,
+				ContextSingleton.getInstance().getContext());
 	}
 
 	public static SimpleExpression setSimpleExpression(String id) {
@@ -141,26 +136,7 @@ public class Manager {
 
 	}
 
-	private static void out(String string) {
-		System.out.print(string);
-	}
-
-	private static void outln(String string) {
-		System.out.println(string);
-	}
-
-	private static void outln() {
-		System.out.println();
-	}
-
-	public static void createVars() {
-		/*
-		 * Vector<Variable> vars =
-		 * VariableSingleton.getInstance().getVariables(); for (Variable v :
-		 * vars) outln(" # " + v.getName()+ " ");
-		 */
-	}
-
+	
 	public static void addMessages(Vector<String> ids, Tuple t) {
 		for (String id : ids) {
 			Message m = new Message(id, t);
@@ -214,8 +190,9 @@ public class Manager {
 
 	public static void addLocations(Vector<String> ids) {
 		for (String id : ids) {
-			Location l = new Location(id);
-			LocationSingleton.getInstance().addLocation(l);
+			LocationSingleton.getInstance().addLocation(id);
+			Sort loc = SortSingleton.getInstance().getSort("Loc") ;
+			FunctionSingleton.getInstance().addFunction(id, new Type(loc) );
 		}
 	}
 
@@ -240,7 +217,8 @@ public class Manager {
 			String id, String sortStr) {
 		Sort sort = SortSingleton.getInstance().getSort(sortStr);
 		if (sort == null)
-			return sortStr + " is not a sort";
+			return "Error : " + sortStr + " is not a sort";
+		addVariable(id, sort);
 		pd.addParam(id, sort);
 		return null;
 	}
@@ -275,6 +253,12 @@ public class Manager {
 
 	public static void setProcessTerm(Process p, ProcessTerm term) {
 		p.setTerm(term);
+		/*
+		 * Vector <Parameter> params = p.getDeclaration().getParams(); for
+		 * (Parameter param : params ) {
+		 * 
+		 * }
+		 */
 	}
 
 	public static Process addProcessDeclaration(ProcessDeclaration declaration) {
@@ -283,10 +267,69 @@ public class Manager {
 		return p;
 	}
 
-	public static ProcessTerm retProcessTermSum (String varStr,String sortStr,ProcessTerm pt) {
-		Sort sort = SortSingleton.getInstance().getSort(sortStr) ;
-		if ( sort == null ) 
-			outln ("Error : in sum context the second ID is not a Sort" ) ;
-		return new ProcessTermSum (varStr,sort,pt) ;
+	public static ProcessTerm retProcessTermSum(String id, String sortStr,
+			ProcessTerm t) {
+		Sort sort = SortSingleton.getInstance().getSort(sortStr);
+		if (sort == null)
+			outln("Error : in sum context the second ID is not a Sort");
+		return new ProcessTermSum(id, sort, t);
 	}
+
+	public static void addProcessTermSumVariable(String id, String sortStr) {
+		Sort sort = SortSingleton.getInstance().getSort(sortStr);
+		if (sort == null)
+			outln("Error : in sum context the second ID is not a Sort");
+		addVariable(id, sort);
+
+	}
+
+	public static Context enterContext() {
+		Context c = ContextSingleton.getInstance().enterContext();
+		ctraceEnter(ContextSingleton.getInstance().getContext().getLevel());
+		return c;
+	}
+
+	private static void ctraceEnter(int id) {
+		for (int i = 0; i < id + 1; i++)
+			err(" ");
+		errln(" -> " +id);
+	}
+
+	public static Context exitContext() {
+		VariableSingleton.getInstance().removeContext(
+				ContextSingleton.getInstance().getContext());
+		ctraceExit(ContextSingleton.getInstance().getContext().getLevel());
+		return ContextSingleton.getInstance().exitContext();
+	}
+
+	private static void ctraceExit(int id) {
+		for (int i = 0; i < id + 1; i++)
+			err(" ");
+		errln(" <- " +id);
+	}
+	private static void err (String str ) {
+		//System.out.print( str ) ;
+	}
+	private static void errln ( String str ) {
+		err (str) ;errln () ;
+	}
+
+	private static void errln() {
+		err ("\n") ;
+		
+	}
+	
+	private static void out(String string) {
+		 System.out.print(string);
+	}
+
+	private static void outln(String string) {
+		out(string);
+		out("\n");
+	}
+
+	private static void outln() {
+		out("\n");
+	}
+
 }
