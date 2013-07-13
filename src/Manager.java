@@ -42,7 +42,7 @@ public class Manager {
 						out(" | ");
 					out(f.getName());
 					int numS = 0;
-					for (Sort typesort : t.getFirst().l) {
+					for (Sort typesort : t.getFirst().getSortList()) {
 						numS++;
 						if (numS == 1)
 							out(" of ");
@@ -61,14 +61,16 @@ public class Manager {
 	public static String addMap(String id, Type t) {
 		Map m = new Map(id);
 		m.setType(t);
+
 		MapSingleton.getInstance().addMap(m);
+
 		return id;
 	}
 
 	public static void addVariables(Vector<String> v, String s) {
 		Sort tSort = SortSingleton.getInstance().getSort(s);
 		if (tSort == null)
-			errln (" Error : " + s + " is not a valid Sort ");
+			errln(" Error : " + s + " is not a valid Sort ");
 		for (String vName : v)
 			Manager.addVariable(vName, tSort);
 	}
@@ -78,23 +80,67 @@ public class Manager {
 				ContextSingleton.getInstance().getContext());
 	}
 
-	public static SimpleExpression setSimpleExpression(String id) {
+	public static SimpleExpression retSimpleExpressionSingle(String id) {
 		Variable v = VariableSingleton.getInstance().getVariable(id);
 		Function f = FunctionSingleton.getInstance().getFunction(id);
-		Map m = MapSingleton.getInstance().getMap(id);
 		if (v != null)
-			return new VariableExpression(v);
-		else if (f != null)
-			return new FunctionCallExpression(f);
-		else if (m != null)
-			return new MapCallExpression(m);
-		else 
-			simpleExpressionError(id) ;
+			return new SimpleExpressionVariable(v);
+		else if (f != null) {
+			if (f.getType().getFirst().getSortList().size() > 0)
+				errln("Error : Function " + f.getName()
+						+ " Doesn't have any argument.");
+			return new SimpleExpressoinFunctionCall(f);
+		} else
+			errln("Error : " + id
+					+ " in simpleExpression is not a Variable or Function");
 		return null;
 	}
 
-	public static String simpleExpressionError(String id) {
-		return id + " in simpleExpression is not a variable/function/map ! ";
+	public static SimpleExpression retSimpleExpressionComplex(String id,
+			Vector<SimpleExpression> args) {
+		Function f = FunctionSingleton.getInstance().getFunction(id);
+		
+		if (f != null) {
+			Vector<Sort> sortList = f.getType().getFirst().getSortList();
+			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
+				Sort s = sortList.get(i);
+				SimpleExpression e = args.get(i);
+				if (s.equals(e.getSort()) == false)
+					errln("Error : Argument #" + (i+1) + "(" + e.getID()
+							+ ") doesn't match with Sort : " + s.getName());
+			}
+			if (sortList.size() != args.size())
+				errln("Error : Singniture of Function '" + f.getName()
+						+ "' doesn't match with arguments");
+			SimpleExpression se = new SimpleExpressoinFunctionCall(f);
+			for (SimpleExpression e:args) 
+				se.addExpr(e) ;
+			return se ;
+		}
+		Map m = MapSingleton.getInstance().getMap(id);
+		if (m != null) {
+			Vector<Sort> sortList = m.getType().getFirst().getSortList();
+			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
+				Sort s = sortList.get(i);
+				SimpleExpression e = args.get(i);
+				if (s.equals(e.getSort()) == false)
+					errln("Error : Argument #" + (i+1) + "(" + e.getID()
+							+ ") doesn't match with Sort : " + s.getName());
+			}
+			if (sortList.size() != args.size()) {
+				errln("Error : Singniture of Map '" + m.getName()
+						+ "' doesn't match with arguments");
+				errln(sortList.size() + " ! = " + args.size());
+			}
+			SimpleExpression se = new SimpleExpressionMapCall(m);
+			for (SimpleExpression e:args) 
+				se.addExpr(e) ;
+			return se;
+		} 
+		if ( m == null && f == null ) 
+			errln("Error : " + id
+					+ " in simpleExpression is not a Function or Map");
+		return null;
 	}
 
 	public static void addEquation(SimpleExpression left, SimpleExpression right) {
@@ -270,14 +316,14 @@ public class Manager {
 			ProcessTerm t) {
 		Sort sort = SortSingleton.getInstance().getSort(sortStr);
 		if (sort == null)
-			outln("Error : in sum context the second ID is not a Sort");
+			errln("Error : in sum context the second ID is not a Sort");
 		return new ProcessTermSum(id, sort, t);
 	}
 
 	public static void addProcessTermSumVariable(String id, String sortStr) {
 		Sort sort = SortSingleton.getInstance().getSort(sortStr);
 		if (sort == null)
-			outln("Error : in sum context the second ID is not a Sort");
+			errln("Error : in sum context the second ID is not a Sort");
 		addVariable(id, sort);
 
 	}
@@ -297,14 +343,14 @@ public class Manager {
 	public static NetworkTerm retNetworkTermHide(String locS, NetworkTerm term) {
 		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
 		if (loc == null)
-			out("Error : " + locS + " in NetworkTermHide is not a location");
+			errln("Error : " + locS + " in NetworkTermHide is not a location");
 		return new NetworkTermHide(loc, term);
 	}
 
 	public static NetworkTerm retNetworkTermEncap(String id, NetworkTerm term) {
 		Message m = MessageSingleton.getInstance().getMessage(id);
 		if (m == null)
-			out("Error : " + id
+			errln("Error : " + id
 					+ " in NetworkTermEncap is not a message constructor");
 		return new NetworkTermEncap(m, term);
 	}
@@ -320,28 +366,32 @@ public class Manager {
 	public static void setInitial(NetworkTerm term) {
 		InitialSingleton.getInstance().setNetworkTerm(term);
 	}
-	public static Type retType () {
-		return new Type () ;
+
+	public static Type retType() {
+		return new Type();
 	}
-	public static void setTypeFirst(Type type ,Tuple tuple) {
+
+	public static void setTypeFirst(Type type, Tuple tuple) {
 		type.setFirst(tuple);
 	}
-	
-	public static Tuple retTupleSortList (Vector<String> strs ){
-		Tuple t= new Tuple () ;
-		for (String str :strs ) {
-			Sort s = SortSingleton.getInstance().getSort(str) ;
-			if ( s == null )
-				errln("Error :" +str+ "in Tuple is not a Sort/Loc");
+
+	public static Tuple retTupleSortList(Vector<String> strs) {
+		Tuple t = new Tuple();
+		for (String str : strs) {
+			Sort s = SortSingleton.getInstance().getSort(str);
+			if (s == null)
+				errln("Error :" + str + "in Tuple is not a Sort/Loc");
+			t.addSort(s);
 		}
-		return t ;
+		return t;
 	}
-	///////////////////////
+
+	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public static void setTypeSecond(Type type, String str) {
 		Sort sort = SortSingleton.getInstance().getSort(str);
 		if (sort == null)
-			errln ("Error" + str + "not a valid Sort ");
+			errln("Error" + str + "not a valid Sort ");
 		else
 			type.setSecond(sort);
 	}
@@ -372,7 +422,7 @@ public class Manager {
 	}
 
 	private static void err(String str) {
-		// System.out.print( str ) ;
+		System.out.print(str);
 	}
 
 	private static void errln(String str) {
@@ -386,7 +436,7 @@ public class Manager {
 	}
 
 	private static void out(String string) {
-		System.out.print(string);
+		// System.out.print(string);
 	}
 
 	private static void outln(String string) {
@@ -398,4 +448,7 @@ public class Manager {
 		out("\n");
 	}
 
+	private static int min(int size, int size2) {
+		return (size > size2) ? size2 : size;
+	}
 }

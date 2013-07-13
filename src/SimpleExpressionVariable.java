@@ -1,5 +1,5 @@
 
-public class VariableExpression extends SimpleExpression{
+public class SimpleExpressionVariable extends SimpleExpression{
 	
 	private Variable v ;
 
@@ -12,9 +12,8 @@ public class VariableExpression extends SimpleExpression{
 	}
 	
 	
-	public VariableExpression(Variable v2) {
+	public SimpleExpressionVariable(Variable v2) {
 		v = v2 ;
-		type = 1 ;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -23,5 +22,10 @@ public class VariableExpression extends SimpleExpression{
 	public String toString() {
 		String result = v.getName() ;
 		return result ;
+	}
+
+	@Override
+	public Sort getSort() {
+		return v.getSort();
 	}
 }

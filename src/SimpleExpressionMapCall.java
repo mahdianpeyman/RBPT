@@ -1,4 +1,4 @@
-public class MapCallExpression extends SimpleExpression {
+public class SimpleExpressionMapCall extends SimpleExpression {
 	private Map map;
 
 	public Map getMap() {
@@ -10,8 +10,7 @@ public class MapCallExpression extends SimpleExpression {
 	}
 
 
-	public MapCallExpression(Map m) {
-		type = 3 ;
+	public SimpleExpressionMapCall(Map m) {
 		map = m;
 	}
 
@@ -34,5 +33,10 @@ public class MapCallExpression extends SimpleExpression {
 		}
 		result += " )";
 		return result;	}
+
+	@Override
+	public Sort getSort() {
+		return map.getType().getSecond();
+	}
 
 }

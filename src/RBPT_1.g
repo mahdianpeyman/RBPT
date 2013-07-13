@@ -90,9 +90,7 @@ type returns [Type value] locals [String tS=""]
     ID {$tS = $ID.text;}
     | LOCSORT {$tS = $ID.text;}
   )
-  {
-      Manager.setTypeSecond($value,$tS) ;  
-  }
+  { Manager.setTypeSecond($value,$tS) ;   }
   ;
 
 /*** return type should be of a sort ('Loc' is a predefined sort), it should be checked in semantics ***/ /*s? does'nt ID match 'Loc' ? */
@@ -112,7 +110,8 @@ tuple returns [Tuple value] locals [String tS=""]
     | LOCSORT {$tS = $LOCSORT.text;}
   )
   { strs.add($tS) ;}
-  )*{ $value = Manager.retTupleSortList(strs) ;}
+  )*
+  { $value = Manager.retTupleSortList(strs) ;}
   ;
 
 /*** I removed ID in definition of Type***/
@@ -151,14 +150,14 @@ equation locals [SimpleExpression left]
   ;
 
 simpleExpression returns [SimpleExpression value] 
-@init {
-}
   :
-  ID {$value = Manager.setSimpleExpression ($ID.text);}
-  | (ID {$value = Manager.setSimpleExpression($ID.text); }
-      LPAREN left=simpleExpression {$value.addExpr($left.value);}
-      (COMMA right=simpleExpression {$value.addExpr($right.value);})* 
-  RPAREN)
+  {Vector<SimpleExpression> args = new Vector<SimpleExpression> () ;}
+  
+  (ID {$value = Manager.retSimpleExpressionSingle ($ID.text);}
+  | (ID LPAREN left=simpleExpression {args.add($left.value);}
+      ( COMMA right=simpleExpression {args.add($right.value);})*
+       {$value=Manager.retSimpleExpressionComplex($ID.text,args);} 
+  RPAREN  ))
   ;
 
 msgs

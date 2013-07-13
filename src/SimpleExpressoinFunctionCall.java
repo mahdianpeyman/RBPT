@@ -1,4 +1,4 @@
-public class FunctionCallExpression extends SimpleExpression {
+public class SimpleExpressoinFunctionCall extends SimpleExpression {
 	private Function func;
 
 	public Function getFunc() {
@@ -11,16 +11,15 @@ public class FunctionCallExpression extends SimpleExpression {
 
 	
 
-	public FunctionCallExpression(Function f) {
-		type = 2 ;
+	public SimpleExpressoinFunctionCall(Function f) {
 		func = f;
 	}
 
 	
 	@Override
-	public String toString() {
+	public String toString() { 
 		String result = func.getName();
-		if (func.getType().getFirst().l.size() > 0) {
+		if (func.getType().getFirst().getSortList().size() > 0) {
 			int num = 0 ; 
 			for (SimpleExpression e : exprs){
 				num++ ;
@@ -35,5 +34,10 @@ public class FunctionCallExpression extends SimpleExpression {
 			
 		}
 		return result;
+	}
+
+	@Override
+	public Sort getSort() {
+		return func.getType().getSecond();
 	}
 }

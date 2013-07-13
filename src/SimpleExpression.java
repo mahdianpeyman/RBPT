@@ -5,7 +5,6 @@ public abstract class SimpleExpression {
 	
 	private String ID ;
 	protected Vector <SimpleExpression> exprs ;
-	protected int type ;
 	public SimpleExpression(){
 		setExprs(new Vector <SimpleExpression> ()) ;
 	}
@@ -36,12 +35,9 @@ public abstract class SimpleExpression {
 	
 	@Override
 	public abstract String toString () ;
-	public int getType() {
-		return type;
-	}
-	public void setType(int type) {
-		this.type = type;
-	}
+
+	public abstract Sort getSort() ;
+	
 	
 	
 }

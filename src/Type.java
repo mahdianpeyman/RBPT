@@ -1,5 +1,3 @@
-
-
 public class Type {
 	private Tuple first ;
 	private Sort second ;

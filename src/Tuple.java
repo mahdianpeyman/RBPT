@@ -1,14 +1,14 @@
 import java.util.Vector;
 
 public class Tuple {
-	public Vector<Sort> l;
-
-	public int size() {
-		return l.size();
+	private Vector<Sort> sortList;
+	
+	public Vector<Sort> getSortList () {
+		return sortList;
 	}
 
 	public void addSort(Sort s) {
-		l.add(s);
+		sortList.add(s);
 	}
 
 	public String addSort(String str) {
@@ -21,20 +21,20 @@ public class Tuple {
 	}
 
 	Tuple() {
-		l = new Vector<Sort>();
+		sortList = new Vector<Sort>();
 	}
 
 	public Tuple(Tuple t) {
 		// TODO Auto-generated constructor stub
-		l = new Vector<Sort>() ;
-		for (Sort s : t.l)
-			l.add(s) ;
+		sortList = new Vector<Sort>() ;
+		for (Sort s : t.sortList)
+			sortList.add(s) ;
 	}
 	@Override
 	public String toString () {
 		String result = "" ;
 		int num = 0 ;
-		for (Sort s : l ) {
+		for (Sort s : sortList ) {
 			num ++ ;
 			if ( num == 1 ) 
 				result += " of ";
