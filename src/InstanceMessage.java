@@ -4,7 +4,7 @@ public class InstanceMessage extends Instance {
 	private Message msg;
 
 	public InstanceMessage(Message msg2, Vector<SimpleExpression> ses) {
-		setID (msg2.getID()) ;
+		setID(msg2.getID());
 		setMsg(msg2);
 		setExprs(ses);
 	}
@@ -18,8 +18,12 @@ public class InstanceMessage extends Instance {
 	}
 
 	@Override
-	public String toString() {
+	public Sort getSort() {
+		return SortSingleton.getInstance().getSort("Msg");
+	}
 
+	@Override
+	public String toML() {
 		String result = msg.getID();
 		int num = 0;
 		for (SimpleExpression e : exprs) {
@@ -28,20 +32,10 @@ public class InstanceMessage extends Instance {
 				result += " ( ";
 			else
 				result += " , ";
-			result += e;
+			result += e.toML();
 		}
 		result += " )";
 		return result;
-	}
-
-	@Override
-	public Sort getSort() {
-		return SortSingleton.getInstance().getSort("Msg");
-	}
-
-	@Override
-	public String toML() {
-		return toString();
 	}
 
 }

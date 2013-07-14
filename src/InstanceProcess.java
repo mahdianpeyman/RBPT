@@ -20,7 +20,7 @@ public class InstanceProcess extends Instance {
 	}
 
 	@Override
-	public String toString() {
+	public String toML() {
 		String result = proc.getDeclaration().getId();
 		int num = 0;
 		for (SimpleExpression e : exprs) {
@@ -29,15 +29,10 @@ public class InstanceProcess extends Instance {
 				result += " ( ";
 			else
 				result += " , ";
-			result += e;
+			result += e.toML();
 		}
 		result += " )";
 		return result;
-	}
-
-	@Override
-	public String toML() {
-		return toString();
 	}
 
 	@Override

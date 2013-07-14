@@ -1,7 +1,5 @@
-
 public abstract class ProcessTerm {
 
-	public abstract String toML() ;	
-	
+	public abstract String toML();
 
 }

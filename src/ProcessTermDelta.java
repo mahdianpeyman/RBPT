@@ -1,4 +1,3 @@
-
 public class ProcessTermDelta extends ProcessTerm {
 
 	@Override

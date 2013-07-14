@@ -1,5 +1,4 @@
-
-public abstract class  NetworkTerm {
-	public abstract String toML() ;
+public abstract class NetworkTerm {
+	public abstract String toML();
 
 }

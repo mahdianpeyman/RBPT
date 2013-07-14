@@ -1,15 +1,16 @@
-
 public class NetworkTermAbs extends NetworkTerm {
-	private Message message ;
-	private NetworkTerm networkTerm ;
+	private Message message;
+	private NetworkTerm networkTerm;
+
 	public NetworkTermAbs(Message m2, NetworkTerm term) {
-		setMessage( m2) ;
-		setNetworkTerm(term) ;
+		setMessage(m2);
+		setNetworkTerm(term);
 	}
-	
+
 	public NetworkTerm getNetworkTerm() {
 		return networkTerm;
 	}
+
 	public void setNetworkTerm(NetworkTerm networkTerm) {
 		this.networkTerm = networkTerm;
 	}
@@ -27,12 +28,9 @@ public class NetworkTermAbs extends NetworkTerm {
 		String result = "n_abs(";
 		result += message.toML();
 		result += ",";
-		result +=result=networkTerm.toML();
-		result += ")" ;
-		return result ;
+		result += result = networkTerm.toML();
+		result += ")";
+		return result;
 	}
-
-
-	
 
 }

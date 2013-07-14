@@ -5,7 +5,7 @@ public class InstanceMap extends Instance {
 	private Map map;
 
 	public InstanceMap(Map map2, Vector<SimpleExpression> ses) {
-		setID (map2.getName()) ;
+		setID(map2.getName());
 		setExprs(ses);
 		setMap(map2);
 	}
@@ -18,12 +18,13 @@ public class InstanceMap extends Instance {
 		this.map = map;
 	}
 
-	/*
-	 * @Override public boolean isRelated(Map m) { return (map.equals(m)); }
-	 */
+	@Override
+	public Sort getSort() {
+		return map.getType().getSecond();
+	}
 
 	@Override
-	public String toString() {
+	public String toML() {
 		String result = map.getName();
 		int num = 0;
 		for (SimpleExpression e : exprs) {
@@ -32,21 +33,10 @@ public class InstanceMap extends Instance {
 				result += " ( ";
 			else
 				result += " , ";
-			result += e;
+			result += e.toML();
 		}
 		result += " )";
 		return result;
-		
-	}
-
-	@Override
-	public Sort getSort() {
-		return map.getType().getSecond();
-	}
-
-	@Override
-	public String toML() {
-		return toString();
 	}
 
 }

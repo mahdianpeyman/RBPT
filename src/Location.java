@@ -1,10 +1,9 @@
-
 public class Location {
-	private String id ;
+	private String id;
 
 	public Location(String id2) {
 		// TODO Auto-generated constructor stub
-		id = id2 ;
+		id = id2;
 	}
 
 	public String getId() {

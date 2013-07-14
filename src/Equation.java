@@ -8,7 +8,6 @@ public class Equation {
 	public Equation(SimpleExpression left2, SimpleExpression right2) {
 		left = left2;
 		right = right2;
-		// TODO Auto-generated constructor stub
 	}
 
 	public SimpleExpression getLeft() {
@@ -28,6 +27,6 @@ public class Equation {
 	}
 
 	public boolean isRelated(Map m) {
-		return left.isRelated(m) ;
+		return left.isRelated(m);
 	}
 }

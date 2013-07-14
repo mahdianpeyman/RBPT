@@ -1,13 +1,12 @@
 import java.util.Vector;
 
-
 public class InstanceVariable extends Instance {
-	private Variable var ;
+	private Variable var;
 
 	public InstanceVariable(Variable var2) {
-		setID (var2.getName()) ;
-		setVar(var2) ;
-		setExprs(new Vector<SimpleExpression>()) ;
+		setID(var2.getName());
+		setVar(var2);
+		setExprs(new Vector<SimpleExpression>());
 	}
 
 	public Variable getVar() {
@@ -19,20 +18,13 @@ public class InstanceVariable extends Instance {
 	}
 
 	@Override
-	public String toString() {
-		return var.getName();
-	}
-
-	@Override
 	public Sort getSort() {
 		return var.getSort();
 	}
-	
+
 	@Override
 	public String toML() {
-		return toString();
+		return var.getName();
 	}
-
-	
 
 }

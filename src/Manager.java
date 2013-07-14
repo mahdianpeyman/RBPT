@@ -6,9 +6,8 @@ public class Manager {
 	public int a;
 
 	public static void addFunctions(Vector<String> v, Type t) {
-		for (int i = 0; i < v.size(); i++) {
+		for (int i = 0; i < v.size(); i++)
 			addFunction(v.elementAt(i), t);
-		}
 	};
 
 	public static String addFunction(String id, Type t) {
@@ -29,9 +28,13 @@ public class Manager {
 		outln();
 		outln("# All datatypes are created from sorts and funcs");
 		for (Sort s : sorts) {
-			/*
-			 * if (s.getName().equals("Loc")) continue;
-			 */
+			if (s.getName().equals("Loc"))
+				continue;
+			if (s.getName().equals("Msg"))
+				continue;
+			if (s.getName().equals("Action"))
+				continue;
+
 			out("datatype " + s.getName());
 			int numF = 0;
 			for (Function f : funcs) {
@@ -82,7 +85,7 @@ public class Manager {
 
 	public static void addEquation(SimpleExpression left, SimpleExpression right) {
 		Equation e = new Equation(left, right);
-		testln ("Test : " + left.getID() + " : " + left ) ;
+		testln("Test : " + left.getID() + " : " + left);
 		EquationSingleton.getInstance().addEquation(e);
 	}
 
@@ -92,7 +95,7 @@ public class Manager {
 			Vector<Equation> eqns = EquationSingleton.getInstance()
 					.getRelatedEquation(m);
 			outln();
-			outln("# equations of " + m.getName());
+			outln("# Equations of " + m.getName());
 			int numE = 0;
 			for (Equation e : eqns) {
 				numE++;
@@ -116,7 +119,7 @@ public class Manager {
 	}
 
 	private static void printMLSimpleExpression(SimpleExpression se) {
-		out(se.toString());
+		out(se.toML());
 
 	}
 
@@ -132,16 +135,21 @@ public class Manager {
 	}
 
 	public static void createMsgSort_Msg() {
-		/*
-		 * Vector<Message> msgs = MessageSingleton.getInstance().getMessages();
-		 * outln(); outln("# Msg created from msgs rule"); out("datatype Msg ");
-		 * int numM = 0; for (Message m : msgs) { numM++; if (numM == 1)
-		 * out(" = "); else out(" | "); out(m.getID());
-		 * outln(m.getParams().toString()); } outln(" ; ");
-		 */
-		// Acutally, datatype Msg is being created in sort, since I consider Msg
-		// as a Sort in ML
-
+		Vector<Message> msgs = MessageSingleton.getInstance().getMessages();
+		outln();
+		outln("# Msg created from msgs rule");
+		out("datatype Msg ");
+		int numM = 0;
+		for (Message m : msgs) {
+			numM++;
+			if (numM == 1)
+				out(" = ");
+			else
+				out(" | ");
+			out(m.getID());
+			outln(m.getParams().toML());
+		}
+		outln(" ; ");
 	}
 
 	public static void addActions(Vector<String> ids, Tuple t) {
@@ -156,13 +164,21 @@ public class Manager {
 	}
 
 	public static void createActionSortAction() {
-		/*
-		 * Vector<Action> acts = ActionSingleton.getInstance().getActions();
-		 * outln(); outln("# Action created from acts rule");
-		 * out("datatype Action "); int num = 0; for (Action a : acts) { num++;
-		 * if (num == 1) out(" = "); else out(" | "); out(a.getId());
-		 * outln(a.getParams().toString()); } outln(" ; ");
-		 */
+		Vector<Action> acts = ActionSingleton.getInstance().getActions();
+		outln();
+		outln("# Action created from acts rule");
+		out("datatype Action ");
+		int num = 0;
+		for (Action a : acts) {
+			num++;
+			if (num == 1)
+				out(" = ");
+			else
+				out(" | ");
+			out(a.getId());
+			outln(a.getParams().toML());
+		}
+		outln(" ; ");
 	}
 
 	public static void addLocations(Vector<String> ids) {
@@ -174,13 +190,20 @@ public class Manager {
 	}
 
 	public static void createLocSortLocs() {
-		/*
-		 * Vector<Location> locs =
-		 * LocationSingleton.getInstance().getLocations(); outln();
-		 * outln("# Loc from locs"); out("datatype Loc "); int num = 0; for
-		 * (Location l : locs) { num++; if (num == 1) out(" = "); else
-		 * out(" | "); out(l.getId()); } outln(" ; ");
-		 */
+		Vector<Location> locs = LocationSingleton.getInstance().getLocations();
+		outln();
+		outln("# Loc from locs");
+		out("datatype Loc ");
+		int num = 0;
+		for (Location l : locs) {
+			num++;
+			if (num == 1)
+				out(" = ");
+			else
+				out(" | ");
+			out(l.getId());
+		}
+		outln(" ; ");
 	}
 
 	public static String addParameterProcessDeclaration(ProcessDeclaration pd,
@@ -214,7 +237,7 @@ public class Manager {
 				errln("Error : Singniture of Map '"
 						+ proc.getDeclaration().getId()
 						+ "' doesn't match with arguments");
-				errln(sortList.size() + " ! = " + args.size());
+				errln("Error : " + sortList.size() + " ! = " + args.size());
 			}
 			Instance inst = new InstanceProcess(proc, args);
 			return inst;
@@ -296,7 +319,7 @@ public class Manager {
 			if (sortList.size() != args.size()) {
 				errln("Error : Singniture of Map '" + map.getName()
 						+ "' doesn't match with arguments");
-				errln(sortList.size() + " ! = " + args.size());
+				errln("Error : " + sortList.size() + " ! = " + args.size());
 			}
 			Instance inst = new InstanceMap(map, args);
 			return inst;
@@ -325,23 +348,11 @@ public class Manager {
 	}
 
 	public static ProcessTerm instanceToProcessTerm(Instance ins) {
-		Vector<SimpleExpression> exprs = ins.getExprs();
-		/*
-		 * if (exprs.size() > 0) { testln("Test : " + ins.toString() +
-		 * " is a ProcessCall"); } else { testln("Test : " + ins.toString() +
-		 * " is a ProcessVariable"); }
-		 */
 		return new ProcessTermInstance(ins);
 	}
 
 	public static void setProcessTerm(Process p, ProcessTerm term) {
 		p.setTerm(term);
-		/*
-		 * Vector <Parameter> params = p.getDeclaration().getParams(); for
-		 * (Parameter param : params ) {
-		 * 
-		 * }
-		 */
 	}
 
 	public static Process addProcessDeclaration(ProcessDeclaration declaration) {
@@ -417,6 +428,7 @@ public class Manager {
 	public static void setInitial(NetworkTerm term) {
 		InitialSingleton.getInstance().setNetworkTerm(term);
 	}
+
 	public static void createInitial() {
 		outln(InitialSingleton.getInstance().getNetworkTerm().toML());
 	}
@@ -439,13 +451,13 @@ public class Manager {
 		}
 		return t;
 	}
-	
-	public static void finalTest(){
-		Vector <Equation> eqs = EquationSingleton.getInstance().getEquations();
-		for (Equation e : eqs ) {
-			test ( e.getLeft().getID() + " : ") ;
-			testln(e.getLeft()+" = "+ e.getRight()) ;
-			
+
+	public static void finalTest() {
+		Vector<Equation> eqs = EquationSingleton.getInstance().getEquations();
+		for (Equation e : eqs) {
+			test(e.getLeft().getID() + " : ");
+			testln(e.getLeft() + " = " + e.getRight());
+
 		}
 	}
 
@@ -517,7 +529,7 @@ public class Manager {
 	}
 
 	private static void err(String str) {
-		//System.out.print(str);
+		System.out.print(str);
 	}
 
 	private static void out(String string) {
@@ -525,7 +537,7 @@ public class Manager {
 	}
 
 	private static void test(String string) {
-		//System.out.print(string);
+		// System.out.print(string);
 	}
-	
+
 }
