@@ -1,5 +1,7 @@
 import java.util.Vector;
 
+import com.sun.tools.internal.xjc.reader.gbind.Expression;
+
 public class Manager {
 	public int a;
 
@@ -10,7 +12,6 @@ public class Manager {
 	};
 
 	public static String addFunction(String id, Type t) {
-
 		FunctionSingleton.getInstance().addFunction(id, t);
 		return id;
 	}
@@ -28,8 +29,9 @@ public class Manager {
 		outln();
 		outln("# All datatypes are created from sorts and funcs");
 		for (Sort s : sorts) {
-			if (s.getName().equals("Loc"))
-				continue;
+			/*
+			 * if (s.getName().equals("Loc")) continue;
+			 */
 			out("datatype " + s.getName());
 			int numF = 0;
 			for (Function f : funcs) {
@@ -61,9 +63,7 @@ public class Manager {
 	public static String addMap(String id, Type t) {
 		Map m = new Map(id);
 		m.setType(t);
-
 		MapSingleton.getInstance().addMap(m);
-
 		return id;
 	}
 
@@ -80,71 +80,9 @@ public class Manager {
 				ContextSingleton.getInstance().getContext());
 	}
 
-	public static SimpleExpression retSimpleExpressionSingle(String id) {
-		Variable v = VariableSingleton.getInstance().getVariable(id);
-		Function f = FunctionSingleton.getInstance().getFunction(id);
-		if (v != null)
-			return new SimpleExpressionVariable(v);
-		else if (f != null) {
-			if (f.getType().getFirst().getSortList().size() > 0)
-				errln("Error : Function " + f.getName()
-						+ " Doesn't have any argument.");
-			return new SimpleExpressoinFunctionCall(f);
-		} else
-			errln("Error : " + id
-					+ " in simpleExpression is not a Variable or Function");
-		return null;
-	}
-
-	public static SimpleExpression retSimpleExpressionComplex(String id,
-			Vector<SimpleExpression> args) {
-		Function f = FunctionSingleton.getInstance().getFunction(id);
-		
-		if (f != null) {
-			Vector<Sort> sortList = f.getType().getFirst().getSortList();
-			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
-				Sort s = sortList.get(i);
-				SimpleExpression e = args.get(i);
-				if (s.equals(e.getSort()) == false)
-					errln("Error : Argument #" + (i+1) + "(" + e.getID()
-							+ ") doesn't match with Sort : " + s.getName());
-			}
-			if (sortList.size() != args.size())
-				errln("Error : Singniture of Function '" + f.getName()
-						+ "' doesn't match with arguments");
-			SimpleExpression se = new SimpleExpressoinFunctionCall(f);
-			for (SimpleExpression e:args) 
-				se.addExpr(e) ;
-			return se ;
-		}
-		Map m = MapSingleton.getInstance().getMap(id);
-		if (m != null) {
-			Vector<Sort> sortList = m.getType().getFirst().getSortList();
-			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
-				Sort s = sortList.get(i);
-				SimpleExpression e = args.get(i);
-				if (s.equals(e.getSort()) == false)
-					errln("Error : Argument #" + (i+1) + "(" + e.getID()
-							+ ") doesn't match with Sort : " + s.getName());
-			}
-			if (sortList.size() != args.size()) {
-				errln("Error : Singniture of Map '" + m.getName()
-						+ "' doesn't match with arguments");
-				errln(sortList.size() + " ! = " + args.size());
-			}
-			SimpleExpression se = new SimpleExpressionMapCall(m);
-			for (SimpleExpression e:args) 
-				se.addExpr(e) ;
-			return se;
-		} 
-		if ( m == null && f == null ) 
-			errln("Error : " + id
-					+ " in simpleExpression is not a Function or Map");
-		return null;
-	}
-
 	public static void addEquation(SimpleExpression left, SimpleExpression right) {
 		Equation e = new Equation(left, right);
+		testln ("Test : " + left.getID() + " : " + left ) ;
 		EquationSingleton.getInstance().addEquation(e);
 	}
 
@@ -186,25 +124,23 @@ public class Manager {
 		for (String id : ids) {
 			Message m = new Message(id, t);
 			MessageSingleton.getInstance().addMessage(m);
+			Type msgFunctionType = new Type(SortSingleton.getInstance()
+					.getSort("Msg"));
+			msgFunctionType.setFirst(t);
+			FunctionSingleton.getInstance().addFunction(id, msgFunctionType);
 		}
 	}
 
 	public static void createMsgSort_Msg() {
-		Vector<Message> msgs = MessageSingleton.getInstance().getMessages();
-		outln();
-		outln("# Msg created from msgs rule");
-		out("datatype Msg ");
-		int numM = 0;
-		for (Message m : msgs) {
-			numM++;
-			if (numM == 1)
-				out(" = ");
-			else
-				out(" | ");
-			out(m.getID());
-			outln(m.getParams().toString());
-		}
-		outln(" ; ");
+		/*
+		 * Vector<Message> msgs = MessageSingleton.getInstance().getMessages();
+		 * outln(); outln("# Msg created from msgs rule"); out("datatype Msg ");
+		 * int numM = 0; for (Message m : msgs) { numM++; if (numM == 1)
+		 * out(" = "); else out(" | "); out(m.getID());
+		 * outln(m.getParams().toString()); } outln(" ; ");
+		 */
+		// Acutally, datatype Msg is being created in sort, since I consider Msg
+		// as a Sort in ML
 
 	}
 
@@ -212,25 +148,21 @@ public class Manager {
 		for (String id : ids) {
 			Action a = new Action(id, t);
 			ActionSingleton.getInstance().addAction(a);
+			Sort action = SortSingleton.getInstance().getSort("Action");
+			Type type = new Type(action);
+			type.setFirst(t);
+			FunctionSingleton.getInstance().addFunction(id, type);
 		}
 	}
 
 	public static void createActionSortAction() {
-		Vector<Action> acts = ActionSingleton.getInstance().getActions();
-		outln();
-		outln("# Action created from acts rule");
-		out("datatype Action ");
-		int num = 0;
-		for (Action a : acts) {
-			num++;
-			if (num == 1)
-				out(" = ");
-			else
-				out(" | ");
-			out(a.getId());
-			outln(a.getParams().toString());
-		}
-		outln(" ; ");
+		/*
+		 * Vector<Action> acts = ActionSingleton.getInstance().getActions();
+		 * outln(); outln("# Action created from acts rule");
+		 * out("datatype Action "); int num = 0; for (Action a : acts) { num++;
+		 * if (num == 1) out(" = "); else out(" | "); out(a.getId());
+		 * outln(a.getParams().toString()); } outln(" ; ");
+		 */
 	}
 
 	public static void addLocations(Vector<String> ids) {
@@ -242,20 +174,13 @@ public class Manager {
 	}
 
 	public static void createLocSortLocs() {
-		Vector<Location> locs = LocationSingleton.getInstance().getLocations();
-		outln();
-		outln("# Loc from locs");
-		out("datatype Loc ");
-		int num = 0;
-		for (Location l : locs) {
-			num++;
-			if (num == 1)
-				out(" = ");
-			else
-				out(" | ");
-			out(l.getId());
-		}
-		outln(" ; ");
+		/*
+		 * Vector<Location> locs =
+		 * LocationSingleton.getInstance().getLocations(); outln();
+		 * outln("# Loc from locs"); out("datatype Loc "); int num = 0; for
+		 * (Location l : locs) { num++; if (num == 1) out(" = "); else
+		 * out(" | "); out(l.getId()); } outln(" ; ");
+		 */
 	}
 
 	public static String addParameterProcessDeclaration(ProcessDeclaration pd,
@@ -268,31 +193,144 @@ public class Manager {
 		return null;
 	}
 
-	public static Instance makeInstance(String id, Vector<SimpleExpression> ses) {
-		Function func = FunctionSingleton.getInstance().getFunction(id);
-		if (func != null)
-			return new InstanceFunction(func, ses);
-		Map map = MapSingleton.getInstance().getMap(id);
-		if (map != null)
-			return new InstanceMap(map, ses);
-		Action act = ActionSingleton.getInstance().getAction(id);
-		if (act != null)
-			return new InstanceAction(act, ses);
+	public static Instance makeInstance(String id, Vector<SimpleExpression> args) {
+
 		Process proc = ProcessSingleton.getInstance().getProcess(id);
 		if (proc != null) {
-			return new InstanceProcess(proc, ses);
+			Vector<Parameter> params = proc.getDeclaration().getParams();
+			Vector<Sort> sortList = new Vector<Sort>();
+			for (Parameter p : params)
+				sortList.add(p.getType());
+			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
+				Sort s = sortList.get(i);
+				SimpleExpression e = args.get(i);
+				if (s.equals(e.getSort()) == false)
+					errln("Error : In ProcessInstanc <"
+							+ proc.getDeclaration().getId() + ">Argument #"
+							+ (i + 1) + "(" + e.getID()
+							+ ") doesn't match with Sort : " + s.getName());
+			}
+			if (sortList.size() != args.size()) {
+				errln("Error : Singniture of Map '"
+						+ proc.getDeclaration().getId()
+						+ "' doesn't match with arguments");
+				errln(sortList.size() + " ! = " + args.size());
+			}
+			Instance inst = new InstanceProcess(proc, args);
+			return inst;
 		}
-		Message msg = MessageSingleton.getInstance().getMessage(id);
-		if (msg != null)
-			return new InstanceMessage(msg, ses);
 		Variable var = VariableSingleton.getInstance().getVariable(id);
-		if (var != null)
-			return new InstanceVariable(var, ses);
-		outln(id + " is not a valied instance ! ");
+		if (var != null) {
+			if (args.size() > 0)
+				errln("Error : variable <" + var.getName()
+						+ "> should not have any argument");
+			return new InstanceVariable(var);
+		}
+		Location loc = LocationSingleton.getInstance().getLocaiton(id);
+		if (loc != null) {
+			if (args.size() > 0)
+				errln("Error : Location <" + loc.getId()
+						+ "> should not have any argument");
+			return new InstanceLocation(loc);
+		}
+		Action act = ActionSingleton.getInstance().getAction(id);
+		if (act != null) {
+			Vector<Sort> sortList = act.getParams().getSortList();
+			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
+				Sort s = sortList.get(i);
+				SimpleExpression e = args.get(i);
+				if (s.equals(e.getSort()) == false)
+					errln("Error : for Action : <" + act.getId()
+							+ "> Argument #" + (i + 1) + "(" + e.getID()
+							+ ") doesn't match with Sort : " + s.getName());
+			}
+			if (sortList.size() != args.size())
+				errln("Error : Singniture of Function '" + act.getId()
+						+ "' doesn't match with arguments");
+			Instance inst = new InstanceAction(act, args);
+			return inst;
+		}
+
+		Message msg = MessageSingleton.getInstance().getMessage(id);
+		if (msg != null) {
+			Vector<Sort> sortList = msg.getParams().getSortList();
+			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
+				Sort s = sortList.get(i);
+				SimpleExpression e = args.get(i);
+				if (s.equals(e.getSort()) == false)
+					errln("Error : Argument #" + (i + 1) + "(" + e.getID()
+							+ ") doesn't match with Sort : " + s.getName());
+			}
+			if (sortList.size() != args.size())
+				errln("Error : Singniture of Function '" + msg.getID()
+						+ "' doesn't match with arguments");
+			Instance inst = new InstanceMessage(msg, args);
+			return inst;
+		}
+		Function func = FunctionSingleton.getInstance().getFunction(id);
+		if (func != null) {
+			Vector<Sort> sortList = func.getType().getFirst().getSortList();
+			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
+				Sort s = sortList.get(i);
+				SimpleExpression e = args.get(i);
+				if (s.equals(e.getSort()) == false)
+					errln("Error : Argument #" + (i + 1) + "(" + e.getID()
+							+ ") doesn't match with Sort : " + s.getName());
+			}
+			if (sortList.size() != args.size())
+				errln("Error : Singniture of Function '" + func.getName()
+						+ "' doesn't match with arguments");
+			Instance inst = new InstanceFunction(func, args);
+			return inst;
+		}
+		Map map = MapSingleton.getInstance().getMap(id);
+		if (map != null) {
+			Vector<Sort> sortList = map.getType().getFirst().getSortList();
+			for (int i = 0; i < min(sortList.size(), args.size()); i++) {
+				Sort s = sortList.get(i);
+				SimpleExpression e = args.get(i);
+				if (s.equals(e.getSort()) == false)
+					errln("Error : Argument #" + (i + 1) + "(" + e.getID()
+							+ ") doesn't match with Sort : " + s.getName());
+			}
+			if (sortList.size() != args.size()) {
+				errln("Error : Singniture of Map '" + map.getName()
+						+ "' doesn't match with arguments");
+				errln(sortList.size() + " ! = " + args.size());
+			}
+			Instance inst = new InstanceMap(map, args);
+			return inst;
+		}
+
+		errln("Erorr" + id + " is not a valied instance ! ");
 		return null;
 	}
 
+	public static Instance makeInstanceSND(Instance inst) {
+		if (SortSingleton.getInstance().getSort("Msg").equals(inst.getSort()) == false) {
+			errln("Error : <" + inst.toML() + "> is not a Message");
+			return null;
+		}
+		return new InstanceAction(ActionSingleton.getInstance()
+				.getAction("snd"), inst);
+	}
+
+	public static Instance makeInstanceRCV(Instance inst) {
+		if (SortSingleton.getInstance().getSort("Msg").equals(inst.getSort()) == false) {
+			errln("Error : <" + inst.toML() + "> is not a Message");
+			return null;
+		}
+		return new InstanceAction(ActionSingleton.getInstance()
+				.getAction("rcv"), inst);
+	}
+
 	public static ProcessTerm instanceToProcessTerm(Instance ins) {
+		Vector<SimpleExpression> exprs = ins.getExprs();
+		/*
+		 * if (exprs.size() > 0) { testln("Test : " + ins.toString() +
+		 * " is a ProcessCall"); } else { testln("Test : " + ins.toString() +
+		 * " is a ProcessVariable"); }
+		 */
 		return new ProcessTermInstance(ins);
 	}
 
@@ -330,17 +368,23 @@ public class Manager {
 
 	public static NetworkTerm retNetworkTermParallel(NetworkTerm left,
 			NetworkTerm right) {
-		return new NetworkTermParallel(left, right);
+		// testln("Test : Parallel ");
+		NetworkTerm nt = new NetworkTermParallel(left, right);
+		return nt;
 	}
 
 	public static NetworkTerm retNetworkTermDeploy(String locS, ProcessTerm term) {
+		// testln("Test :Deploy");
 		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
 		if (loc == null)
-			out("Error : " + locS + " in NetworkTermDeploy is not a Location ");
-		return new NetworkTermDeploy(loc, term);
+			errln("Error : " + locS
+					+ " in NetworkTermDeploy is not a Location ");
+		NetworkTerm nt = new NetworkTermDeploy(loc, term);
+		return nt;
 	}
 
 	public static NetworkTerm retNetworkTermHide(String locS, NetworkTerm term) {
+		// testln("Test : Hide");
 		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
 		if (loc == null)
 			errln("Error : " + locS + " in NetworkTermHide is not a location");
@@ -348,6 +392,7 @@ public class Manager {
 	}
 
 	public static NetworkTerm retNetworkTermEncap(String id, NetworkTerm term) {
+		// testln("Test : Encap");
 		Message m = MessageSingleton.getInstance().getMessage(id);
 		if (m == null)
 			errln("Error : " + id
@@ -356,6 +401,7 @@ public class Manager {
 	}
 
 	public static NetworkTerm retNetworkTermAbs(String id, NetworkTerm term) {
+		// testln("Test : Abs");
 		Message m = MessageSingleton.getInstance().getMessage(id);
 		if (m == null)
 			errln("Error : " + id
@@ -363,8 +409,16 @@ public class Manager {
 		return new NetworkTermAbs(m, term);
 	}
 
+	public static NetworkTerm retNetworkTermSingle(NetworkTerm term) {
+		// testln("Test : Single");
+		return term;
+	}
+
 	public static void setInitial(NetworkTerm term) {
 		InitialSingleton.getInstance().setNetworkTerm(term);
+	}
+	public static void createInitial() {
+		outln(InitialSingleton.getInstance().getNetworkTerm().toML());
 	}
 
 	public static Type retType() {
@@ -385,6 +439,15 @@ public class Manager {
 		}
 		return t;
 	}
+	
+	public static void finalTest(){
+		Vector <Equation> eqs = EquationSingleton.getInstance().getEquations();
+		for (Equation e : eqs ) {
+			test ( e.getLeft().getID() + " : ") ;
+			testln(e.getLeft()+" = "+ e.getRight()) ;
+			
+		}
+	}
 
 	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -404,8 +467,8 @@ public class Manager {
 
 	private static void ctraceEnter(int id) {
 		for (int i = 0; i < id + 1; i++)
-			err(" ");
-		errln(" -> " + id);
+			test(" ");
+		testln(" -> " + id);
 	}
 
 	public static Context exitContext() {
@@ -417,15 +480,11 @@ public class Manager {
 
 	private static void ctraceExit(int id) {
 		for (int i = 0; i < id + 1; i++)
-			err(" ");
-		errln(" <- " + id);
+			test(" ");
+		testln(" <- " + id);
 	}
 
-	private static void err(String str) {
-		System.out.print(str);
-	}
-
-	private static void errln(String str) {
+	public static void errln(String str) {
 		err(str);
 		errln();
 	}
@@ -433,10 +492,6 @@ public class Manager {
 	private static void errln() {
 		err("\n");
 
-	}
-
-	private static void out(String string) {
-		// System.out.print(string);
 	}
 
 	private static void outln(String string) {
@@ -448,7 +503,29 @@ public class Manager {
 		out("\n");
 	}
 
+	static void testln(String string) {
+		test(string);
+		test("\n");
+	}
+
+	private static void testln() {
+		test("\n");
+	}
+
 	private static int min(int size, int size2) {
 		return (size > size2) ? size2 : size;
 	}
+
+	private static void err(String str) {
+		//System.out.print(str);
+	}
+
+	private static void out(String string) {
+		System.out.print(string);
+	}
+
+	private static void test(String string) {
+		//System.out.print(string);
+	}
+	
 }

@@ -19,6 +19,15 @@ public class NetworkTermDeploy extends NetworkTerm {
 	public void setProcess(ProcessTerm process) {
 		this.process = process;
 	}
+	@Override
+	public String toML() {
+		String result = "n_deply(";
+		result += loc.getId();
+		result += "," ;
+		result += process.toML();
+		result += ")";
+		return result ;
+	}
 	
 
 }

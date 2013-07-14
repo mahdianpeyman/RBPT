@@ -10,8 +10,6 @@ public class InitialSingleton {
 	public static InitialSingleton getInstance () {
 		if (instance == null ) {
 			instance = new InitialSingleton() ;
-		
-		
 		}
 		return instance ;
 	}

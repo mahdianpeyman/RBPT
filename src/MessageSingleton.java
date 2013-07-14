@@ -12,7 +12,6 @@ public class MessageSingleton {
 	public static MessageSingleton getInstance () {
 		if (instance == null ) {
 			instance = new MessageSingleton() ;
-		
 		}
 		return instance ;
 	}

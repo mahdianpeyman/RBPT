@@ -5,9 +5,6 @@ public abstract class SimpleExpression {
 	
 	private String ID ;
 	protected Vector <SimpleExpression> exprs ;
-	public SimpleExpression(){
-		setExprs(new Vector <SimpleExpression> ()) ;
-	}
 
 	public String getID() {
 		return ID;
@@ -22,14 +19,21 @@ public abstract class SimpleExpression {
 	}
 
 	public void setExprs(Vector <SimpleExpression> exprs) {
-		this.exprs = exprs;
+		this.exprs = new Vector <SimpleExpression> (exprs)  ;
 	}
+	protected void setExprs(final Instance inst) {
+		// TODO Auto-generated method stub
+		this.exprs = new Vector<SimpleExpression>() ;
+		this.exprs.add(inst) ;
+	}
+
 	public void addExpr ( SimpleExpression se) {
 		exprs . add (se) ;
 	}
+	
 	public boolean isRelated(Map m) {
-		// TODO Auto-generated method stub
-		return false;
+		Map map = MapSingleton.getInstance().getMap(ID);
+		return m.equals(map);
 	}
 	
 	

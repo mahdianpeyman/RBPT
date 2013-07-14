@@ -9,6 +9,8 @@ public class SortSingleton {
 	private SortSingleton() {
 		sorts = new Vector<Sort> () ;
 		sorts. add ( new Sort ( "Loc")) ;
+		sorts. add ( new Sort ( "Msg")) ;
+		sorts. add( new Sort ("Action")) ;
 	}
 	public static SortSingleton getInstance () {
 		if (instance == null ) {

@@ -22,6 +22,10 @@ public class ProcessTermSum extends ProcessTerm {
 	public void setProcess(ProcessTerm process) {
 		this.process = process;
 	}
+	@Override
+	public String toML() {
+		return "**PROCESSSUM**";
+	}
 	
 
 }

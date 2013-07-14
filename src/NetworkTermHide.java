@@ -19,6 +19,14 @@ public class NetworkTermHide extends NetworkTerm {
 	public void setNetworkTerm(NetworkTerm networkTerm) {
 		this.networkTerm = networkTerm;
 	}
+	@Override
+	public String toML() {
+		String result ="n_hide(";
+		result += location.getId();
+		result += ",";
+		result += networkTerm.toML();
+		return result ;
+	}
 	
 
 }

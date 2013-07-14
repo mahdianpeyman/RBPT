@@ -11,14 +11,7 @@ public class Tuple {
 		sortList.add(s);
 	}
 
-	public String addSort(String str) {
-		Sort tempS = SortSingleton.getInstance().getSort(str);
-		if (tempS == null)
-			return ("Error " + str+ "not a valid Sort ");
-		addSort(tempS);
-		return null  ;
-
-	}
+	
 
 	Tuple() {
 		sortList = new Vector<Sort>();

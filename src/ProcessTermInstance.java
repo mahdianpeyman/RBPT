@@ -11,6 +11,10 @@ public class ProcessTermInstance extends ProcessTerm {
 	public void setInstance(Instance instance) {
 		this.instance = instance;
 	}
+	@Override
+	public String toML() {
+		return instance.toString();
+	}
 	
 
 }

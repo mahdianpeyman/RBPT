@@ -18,5 +18,13 @@ public class NetworkTermParallel extends NetworkTerm {
 	public void setRight(NetworkTerm right) {
 		this.right = right;
 	}
+	@Override
+	public String toML() {
+		String result = "n_parallel(";
+		result += left.toML();
+		result += "," ;
+		result += right.toML();
+		return result ;
+	}
 
 }

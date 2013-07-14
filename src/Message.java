@@ -19,4 +19,8 @@ public class Message {
 	public void setParams(Tuple params) {
 		this.params = params;
 	}
+	public String toML() {
+		String result = getID() ;
+		return result ;
+	}
 }

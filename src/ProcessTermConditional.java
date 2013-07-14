@@ -26,4 +26,8 @@ public class ProcessTermConditional extends ProcessTerm {
 	public void setRight(ProcessTerm right) {
 		this.right = right;
 	}
+	@Override
+	public String toML() {
+		return "**PROCESSCOND**";
+	}
 }

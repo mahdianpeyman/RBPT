@@ -21,6 +21,18 @@ public class NetworkTermAbs extends NetworkTerm {
 	public void setMessage(Message message) {
 		this.message = message;
 	}
+
+	@Override
+	public String toML() {
+		String result = "n_abs(";
+		result += message.toML();
+		result += ",";
+		result +=result=networkTerm.toML();
+		result += ")" ;
+		return result ;
+	}
+
+
 	
 
 }

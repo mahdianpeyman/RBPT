@@ -19,6 +19,15 @@ public class ProcessTermChoice extends ProcessTerm {
 	public void setRight(ProcessTerm right) {
 		this.right = right;
 	}
+	@Override
+	public String toML() {
+		String result ="p_choice(";
+		result += left.toML();
+		result += ",";
+		result += right.toML();
+		result += ")";
+		return result ;
+	}
 	
 
 }

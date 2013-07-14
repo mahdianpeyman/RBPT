@@ -1,22 +1,34 @@
 
 public class ProcessTermAction extends ProcessTerm {
-	private ActionUse actUse ;
+	private Instance actionInstance ;
 	private ProcessTerm next ;
-	ProcessTermAction (ActionUse au, ProcessTerm pt) {
-		setActUse(au) ;
+	ProcessTermAction (Instance au, ProcessTerm pt) {
 		setNext(pt) ;
+		setActionInstance(au) ;
 	}
-	public ActionUse getActUse() {
-		return actUse;
-	}
-	public void setActUse(ActionUse actUse) {
-		this.actUse = actUse;
-	}
+	
 	public ProcessTerm getNext() {
 		return next;
 	}
 	public void setNext(ProcessTerm next) {
 		this.next = next;
+	}
+	@Override
+	public String toML() {
+		String result = "p_prefix(" ;
+		result += actionInstance.toML() ; //actionInstance.toML() ;
+		result += "," ;
+		result += next.toML() ;
+		result += ")";
+		return result ;
+	}
+
+	public Instance getActionInstance() {
+		return actionInstance;
+	}
+
+	public void setActionInstance(Instance actionInstance) {
+		this.actionInstance = actionInstance;
 	}
 	
 	
