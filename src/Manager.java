@@ -1,7 +1,5 @@
 import java.util.Vector;
 
-import com.sun.tools.internal.xjc.reader.gbind.Expression;
-
 public class Manager {
 	public int a;
 
@@ -20,47 +18,6 @@ public class Manager {
 		SortSingleton.getInstance().addSort(s);
 		return id;
 
-	}
-
-	public static void createDatatypesSortsFunctions() {
-		Vector<Sort> sorts = SortSingleton.getInstance().getSorts();
-		Vector<Function> funcs = FunctionSingleton.getInstance().getFunctions();
-		outln();
-		outln("# All datatypes are created from sorts and funcs");
-		for (Sort s : sorts) {
-			if (s.getName().equals("Loc"))
-				continue;
-			if (s.getName().equals("Msg"))
-				continue;
-			if (s.getName().equals("Action"))
-				continue;
-
-			out("datatype " + s.getName());
-			int numF = 0;
-			for (Function f : funcs) {
-				Type t = f.getType();
-				if (t.getSecond().equals(s)) {
-					numF++;
-					if (numF == 1)
-						out(" = ");
-					else
-						out(" | ");
-					out(f.getName());
-					int numS = 0;
-					for (Sort typesort : t.getFirst().getSortList()) {
-						numS++;
-						if (numS == 1)
-							out(" of ");
-						else
-							out(" * ");
-						out(typesort.getName());
-					}
-
-				}
-
-			}
-			outln(";");
-		}
 	}
 
 	public static String addMap(String id, Type t) {
@@ -89,40 +46,6 @@ public class Manager {
 		EquationSingleton.getInstance().addEquation(e);
 	}
 
-	public static void createMLFuncEQN() {
-		Vector<Map> maps = MapSingleton.getInstance().getMaps();
-		for (Map m : maps) {
-			Vector<Equation> eqns = EquationSingleton.getInstance()
-					.getRelatedEquation(m);
-			outln();
-			outln("# Equations of " + m.getName());
-			int numE = 0;
-			for (Equation e : eqns) {
-				numE++;
-				if (numE == 1)
-					out("fun ");
-				else
-					out(" | ");
-				printMLEqn(e);
-
-				outln();
-			}
-			outln(" ; ");
-		}
-	}
-
-	private static void printMLEqn(Equation e) {
-		printMLSimpleExpression(e.getLeft());
-		out(" = ");
-		printMLSimpleExpression(e.getRight());
-
-	}
-
-	private static void printMLSimpleExpression(SimpleExpression se) {
-		out(se.toML());
-
-	}
-
 	public static void addMessages(Vector<String> ids, Tuple t) {
 		for (String id : ids) {
 			Message m = new Message(id, t);
@@ -132,24 +55,6 @@ public class Manager {
 			msgFunctionType.setFirst(t);
 			FunctionSingleton.getInstance().addFunction(id, msgFunctionType);
 		}
-	}
-
-	public static void createMsgSort_Msg() {
-		Vector<Message> msgs = MessageSingleton.getInstance().getMessages();
-		outln();
-		outln("# Msg created from msgs rule");
-		out("datatype Msg ");
-		int numM = 0;
-		for (Message m : msgs) {
-			numM++;
-			if (numM == 1)
-				out(" = ");
-			else
-				out(" | ");
-			out(m.getID());
-			outln(m.getParams().toML());
-		}
-		outln(" ; ");
 	}
 
 	public static void addActions(Vector<String> ids, Tuple t) {
@@ -163,47 +68,12 @@ public class Manager {
 		}
 	}
 
-	public static void createActionSortAction() {
-		Vector<Action> acts = ActionSingleton.getInstance().getActions();
-		outln();
-		outln("# Action created from acts rule");
-		out("datatype Action ");
-		int num = 0;
-		for (Action a : acts) {
-			num++;
-			if (num == 1)
-				out(" = ");
-			else
-				out(" | ");
-			out(a.getId());
-			outln(a.getParams().toML());
-		}
-		outln(" ; ");
-	}
-
 	public static void addLocations(Vector<String> ids) {
 		for (String id : ids) {
 			LocationSingleton.getInstance().addLocation(id);
 			Sort loc = SortSingleton.getInstance().getSort("Loc");
 			FunctionSingleton.getInstance().addFunction(id, new Type(loc));
 		}
-	}
-
-	public static void createLocSortLocs() {
-		Vector<Location> locs = LocationSingleton.getInstance().getLocations();
-		outln();
-		outln("# Loc from locs");
-		out("datatype Loc ");
-		int num = 0;
-		for (Location l : locs) {
-			num++;
-			if (num == 1)
-				out(" = ");
-			else
-				out(" | ");
-			out(l.getId());
-		}
-		outln(" ; ");
 	}
 
 	public static String addParameterProcessDeclaration(ProcessDeclaration pd,
@@ -379,13 +249,11 @@ public class Manager {
 
 	public static NetworkTerm retNetworkTermParallel(NetworkTerm left,
 			NetworkTerm right) {
-		// testln("Test : Parallel ");
 		NetworkTerm nt = new NetworkTermParallel(left, right);
 		return nt;
 	}
 
 	public static NetworkTerm retNetworkTermDeploy(String locS, ProcessTerm term) {
-		// testln("Test :Deploy");
 		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
 		if (loc == null)
 			errln("Error : " + locS
@@ -395,7 +263,6 @@ public class Manager {
 	}
 
 	public static NetworkTerm retNetworkTermHide(String locS, NetworkTerm term) {
-		// testln("Test : Hide");
 		Location loc = LocationSingleton.getInstance().getLocaiton(locS);
 		if (loc == null)
 			errln("Error : " + locS + " in NetworkTermHide is not a location");
@@ -403,7 +270,6 @@ public class Manager {
 	}
 
 	public static NetworkTerm retNetworkTermEncap(String id, NetworkTerm term) {
-		// testln("Test : Encap");
 		Message m = MessageSingleton.getInstance().getMessage(id);
 		if (m == null)
 			errln("Error : " + id
@@ -412,7 +278,6 @@ public class Manager {
 	}
 
 	public static NetworkTerm retNetworkTermAbs(String id, NetworkTerm term) {
-		// testln("Test : Abs");
 		Message m = MessageSingleton.getInstance().getMessage(id);
 		if (m == null)
 			errln("Error : " + id
@@ -421,7 +286,6 @@ public class Manager {
 	}
 
 	public static NetworkTerm retNetworkTermSingle(NetworkTerm term) {
-		// testln("Test : Single");
 		return term;
 	}
 
@@ -430,7 +294,7 @@ public class Manager {
 	}
 
 	public static void createInitial() {
-		outln(InitialSingleton.getInstance().getNetworkTerm().toML());
+		MLGenerator.createInitial();
 	}
 
 	public static Type retType() {
@@ -461,8 +325,6 @@ public class Manager {
 		}
 	}
 
-	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	public static void setTypeSecond(Type type, String str) {
 		Sort sort = SortSingleton.getInstance().getSort(str);
 		if (sort == null)
@@ -490,13 +352,19 @@ public class Manager {
 		return ContextSingleton.getInstance().exitContext();
 	}
 
+	public static void createML() {
+		MLGenerator.createML();
+	}
+
+	// /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	private static void ctraceExit(int id) {
 		for (int i = 0; i < id + 1; i++)
 			test(" ");
 		testln(" <- " + id);
 	}
 
-	public static void errln(String str) {
+	private static void errln(String str) {
 		err(str);
 		errln();
 	}
@@ -504,15 +372,6 @@ public class Manager {
 	private static void errln() {
 		err("\n");
 
-	}
-
-	private static void outln(String string) {
-		out(string);
-		out("\n");
-	}
-
-	private static void outln() {
-		out("\n");
 	}
 
 	static void testln(String string) {
@@ -530,10 +389,6 @@ public class Manager {
 
 	private static void err(String str) {
 		System.out.print(str);
-	}
-
-	private static void out(String string) {
-		System.out.print(string);
 	}
 
 	private static void test(String string) {

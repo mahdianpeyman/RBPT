@@ -24,13 +24,9 @@ program
     | eqns
   )*
   msgs? acts? locs procs? init
-  {Manager.createDatatypesSortsFunctions();}
-  {Manager.createMsgSort_Msg();}
-  {Manager.createLocSortLocs() ;}
-  {Manager.createActionSortAction() ;}
-  //{Manager.createVars () ;}
-  {Manager.createMLFuncEQN () ;}
+  {Manager.createML() ;}
   {Manager.exitContext() ;}
+  {Manager.finalTest() ;}
   ;
 
 sorts
@@ -151,14 +147,17 @@ equation locals [SimpleExpression left]
 
 simpleExpression returns [SimpleExpression value] 
   :
+  instance {$value=$instance.value ;}
+  ;
+  /*
   {Vector<SimpleExpression> args = new Vector<SimpleExpression> () ;}
-  
   (ID {$value = Manager.retSimpleExpressionSingle ($ID.text);}
   | (ID LPAREN left=simpleExpression {args.add($left.value);}
       ( COMMA right=simpleExpression {args.add($right.value);})*
        {$value=Manager.retSimpleExpressionComplex($ID.text,args);} 
   RPAREN  ))
   ;
+  */
 
 msgs
   :
@@ -262,7 +261,9 @@ processTerm returns [ProcessTerm value] :
     
 processTermChoice returns [ProcessTerm value]
   :
-  left=processTermSingle right=pTP {$value=new ProcessTermChoice($left.value,$right.value) ;}
+  left=processTermSingle right=pTP 
+  { if ($right.value==null) $value = $left.value; 
+    else $value=new ProcessTermChoice($left.value,$right.value) ;}
   ;
 
 processTermSingle returns [ProcessTerm value]
@@ -275,6 +276,11 @@ processTermSingle returns [ProcessTerm value]
   | LPAREN spt=processTerm RPAREN {$value=$spt.value;}
   ;
 
+pName returns [ProcessTerm value]
+  :
+  instance {$value =  Manager.instanceToProcessTerm ($instance.value) ;}
+  ; /* in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
+  
 sum returns [ProcessTerm value]
   :
   {Manager.enterContext() ;}
@@ -294,7 +300,7 @@ pTP returns [ProcessTerm value]
 }
   :
   | PLUS l=processTermSingle r=pTP 
-    { if ($pTP.value != null) $value = new ProcessTermChoice ($l.value,$r.value);
+    { if ($r.value != null) $value = new ProcessTermChoice ($l.value,$r.value);
       else $value = $l.value ;
     }
   ;
@@ -308,13 +314,14 @@ pTP returns [ProcessTerm value]
 
 networkTerm returns [NetworkTerm value]
   :
-  par=networkTermParallel {$value = $par.value;}
+  ntp=networkTermParallel {$value = Manager.retNetworkTermSingle($ntp.value);}
+  
   ;
 
 networkTermParallel returns [NetworkTerm value]:
   l=networkTermSingle r=nTP
-  {if ($nTP.value != null) $value =Manager.retNetworkTermParallel ($l.value,$r.value);
-   else $value = $l.value ;}
+  {if ($r.value != null) $value =Manager.retNetworkTermParallel ($l.value,$r.value);
+   else $value=Manager.retNetworkTermSingle($l.value) ;}
   ;
 
 networkTermSingle returns [NetworkTerm value]
@@ -333,28 +340,28 @@ $value = null ;
 }
 :
   | PARAL l=networkTermSingle r=nTP
-  {if ($nTP.value != null) $value =Manager.retNetworkTermParallel ($l.value,$r.value);
-   else $value = $l.value ;}
+  {if ($r.value != null) $value =Manager.retNetworkTermParallel ($l.value,$r.value);
+   else $value =Manager.retNetworkTermSingle($l.value) ;}
   ;
 
 deploy returns [NetworkTerm value]
   :
-  DEPLOY LPAREN ID COMMA processTerm RPAREN {Manager.retNetworkTermDeploy($ID.text,$processTerm.value);}
+  DEPLOY LPAREN ID COMMA processTerm RPAREN {$value = Manager.retNetworkTermDeploy($ID.text,$processTerm.value);}
   ; /* ID is of 'Loc' type, it should be checked in semantics */
 
 hide returns [NetworkTerm value]
   :
-  HIDE LPAREN ID COMMA networkTerm RPAREN {Manager.retNetworkTermHide($ID.text,$networkTerm.value);}
+  HIDE LPAREN ID COMMA networkTerm RPAREN {$value = Manager.retNetworkTermHide($ID.text,$networkTerm.value);}
   ; /* ID is of 'Loc' type, it should be checked in semantics */
 
 encap returns [NetworkTerm value]
   :
-  ENCAP LPAREN ID COMMA networkTerm RPAREN {Manager.retNetworkTermEncap ($ID.text,$networkTerm.value);}
+  ENCAP LPAREN ID COMMA networkTerm RPAREN {$value = Manager.retNetworkTermEncap ($ID.text,$networkTerm.value);}
   ; /* ID is a message constructor, it should be checked in semantics */
 
 abs returns [NetworkTerm value]
   :
-  ABS LPAREN ID COMMA networkTerm RPAREN {Manager.retNetworkTermAbs ($ID.text,$networkTerm.value);}
+  ABS LPAREN ID COMMA networkTerm RPAREN {$value = Manager.retNetworkTermAbs ($ID.text,$networkTerm.value);}
   ; /* ID is a message constructor, it should be checked in semantics */
 
 init
@@ -372,10 +379,7 @@ cond returns [SimpleExpression value]
   simpleExpression {$value= $simpleExpression.value ;}
   ; /* I made it more efficient  ***/
 
-pName returns [ProcessTerm value]
-  :
-  instance {$value =  Manager.instanceToProcessTerm ($instance.value) ;}
-  ; /* in semantics, process instantiation should be checked ***/ /*s What does it mean?*/
+
 
 instance returns [Instance value]
   :
@@ -384,18 +388,18 @@ instance returns [Instance value]
   {$value=Manager.makeInstance ($ID.text,ses);}
   ; /* a map/action/process/msg/variable/Function instantiation can have zero/more than one parameter ***/
 
-action returns [ActionUse value]
+action returns [Instance value]
   :
-  instance {$value = new ActionUseInstance ($instance.value) ;}
+  instance {$value =  $instance.value;}
   | sndAction {$value = $sndAction.value ;}
   | rcvAction {$value = $rcvAction.value ;}
   ;
 
-sndAction returns [ActionUse value] :
-  SND LPAREN instance RPAREN {$value = new ActionUseSnd ( $instance.value ) ;}
+sndAction returns [Instance value] :
+  SND LPAREN instance RPAREN {$value = Manager.makeInstanceSND ( $instance.value ) ;}
   ;
-rcvAction returns [ActionUse value]:
-  RCV LPAREN instance RPAREN {$value = new ActionUseRcv ($instance.value) ;}
+rcvAction returns [Instance value]:
+  RCV LPAREN instance RPAREN {$value = Manager.makeInstanceRCV ($instance.value) ;}
   ;
 /* in semantics, action instantiation should be checked ***/
 /* in semantics, msg instantiation should be checked ***/

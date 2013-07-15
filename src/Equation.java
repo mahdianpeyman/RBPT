@@ -29,4 +29,8 @@ public class Equation {
 	public boolean isRelated(Map m) {
 		return left.isRelated(m);
 	}
+
+	public String toML() {
+		return left.toML() + " = " + right.toML() ; 
+	}
 }

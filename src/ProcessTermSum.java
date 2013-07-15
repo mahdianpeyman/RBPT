@@ -25,7 +25,11 @@ public class ProcessTermSum extends ProcessTerm {
 
 	@Override
 	public String toML() {
-		return "**PROCESSSUM**";
+		String result = "p_sum ( " ;
+		result += local.getId() ;
+		result += " , " ;
+		result += process.toML() ;
+		return result ;
 	}
 
 }

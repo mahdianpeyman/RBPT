@@ -26,7 +26,7 @@ public class ProcessSingleton {
 		return null;
 	}
 
-	public Vector<Process> getProcesss() {
+	public Vector<Process> getProcesses() {
 		return procs;
 	}
 

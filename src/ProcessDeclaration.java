@@ -35,4 +35,19 @@ public class ProcessDeclaration {
 		return id;
 	}
 
+	public String toML() {
+		String result = getId()  ;
+		int n = 0 ;
+		for (Parameter p : getParams() ) {
+			n++ ;
+			if (n==1) 
+				result += " of " ;
+			else
+				result+=  " * " ;
+			result += p.getType().toML() ;
+		}
+		// TODO Auto-generated method stub
+		return result ;
+	}
+
 }

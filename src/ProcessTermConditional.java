@@ -36,6 +36,7 @@ public class ProcessTermConditional extends ProcessTerm {
 
 	@Override
 	public String toML() {
-		return "**PROCESSCOND**";
+		return "p_cond ( " + cond.toML() + " , " + left.toML() + " , "
+				+ right.toML() + " )";
 	}
 }
