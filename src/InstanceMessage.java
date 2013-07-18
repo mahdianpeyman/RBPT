@@ -22,9 +22,8 @@ public class InstanceMessage extends Instance {
 		return SortSingleton.getInstance().getSort("Msg");
 	}
 
-	@Override
 	public String toML() {
-		String result = msg.getID();
+		String result = msg.toML();
 		int num = 0;
 		for (SimpleExpression e : exprs) {
 			num++;
@@ -34,7 +33,8 @@ public class InstanceMessage extends Instance {
 				result += " , ";
 			result += e.toML();
 		}
-		result += " )";
+		if ( exprs.size()>0 ) 
+			result += " )";
 		return result;
 	}
 

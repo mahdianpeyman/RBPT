@@ -82,7 +82,8 @@ public class Manager {
 		if (sort == null)
 			return "Error : " + sortStr + " is not a sort";
 		addVariable(id, sort);
-		pd.addParam(id, sort);
+		Parameter p = new Parameter(id,sort,ContextSingleton.getInstance().getContext()) ;
+		pd.addParam(p);
 		return null;
 	}
 
@@ -224,6 +225,10 @@ public class Manager {
 	public static void setProcessTerm(Process p, ProcessTerm term) {
 		p.setTerm(term);
 	}
+	
+	public static ProcessDeclaration retProcessDeclaration (String id ) {
+		return new ProcessDeclaration(id,ContextSingleton.getInstance().getContext().getFather());
+	}
 
 	public static Process addProcessDeclaration(ProcessDeclaration declaration) {
 		Process p = new Process(declaration);
@@ -236,7 +241,7 @@ public class Manager {
 		Sort sort = SortSingleton.getInstance().getSort(sortStr);
 		if (sort == null)
 			errln("Error : in sum context the second ID is not a Sort");
-		return new ProcessTermSum(id, sort, t);
+		return new ProcessTermSum(id, sort, t , ContextSingleton.getInstance().getContext());
 	}
 
 	public static void addProcessTermSumVariable(String id, String sortStr) {
@@ -290,12 +295,11 @@ public class Manager {
 	}
 
 	public static void setInitial(NetworkTerm term) {
-		InitialSingleton.getInstance().setNetworkTerm(term);
+		ProcessDeclaration dec = new ProcessDeclaration("Init", ContextSingleton.getInstance().getContext());
+		Process p = new Process(dec, term);
+		ProcessSingleton.getInstance().addProcess(p);
 	}
 
-	public static void createInitial() {
-		MLGenerator.createInitial();
-	}
 
 	public static Type retType() {
 		return new Type();
@@ -348,7 +352,6 @@ public class Manager {
 	public static Context exitContext() {
 		VariableSingleton.getInstance().removeContext(
 				ContextSingleton.getInstance().getContext());
-		ctraceExit(ContextSingleton.getInstance().getContext().getLevel());
 		return ContextSingleton.getInstance().exitContext();
 	}
 

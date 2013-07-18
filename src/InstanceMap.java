@@ -23,9 +23,8 @@ public class InstanceMap extends Instance {
 		return map.getType().getSecond();
 	}
 
-	@Override
 	public String toML() {
-		String result = map.getName();
+		String result = map.toML();
 		int num = 0;
 		for (SimpleExpression e : exprs) {
 			num++;

@@ -19,7 +19,7 @@ public class SortSingleton {
 	}
 
 	public void addSort(Sort s) {
-		sorts.add(s);
+		sorts.add(0,s);
 	}
 
 	public Sort getSort(String name) {

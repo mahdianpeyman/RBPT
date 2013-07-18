@@ -23,12 +23,12 @@ public class NetworkTermParallel extends NetworkTerm {
 		this.right = right;
 	}
 
-	@Override
 	public String toML() {
-		String result = "n_parallel(";
+		String result = "n_parallel( ";
 		result += left.toML();
-		result += ",";
+		result += " , ";
 		result += right.toML();
+		result += " ) ";
 		return result;
 	}
 

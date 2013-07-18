@@ -1,6 +1,6 @@
 import java.util.Vector;
 
-public class EquationSingleton {
+public class EquationSingleton  {
 
 	private static EquationSingleton instance = null;
 	private Vector<Equation> eqns;

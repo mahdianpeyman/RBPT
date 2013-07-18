@@ -22,9 +22,8 @@ public class InstanceFunction extends Instance {
 		return func.getType().getSecond();
 	}
 
-	@Override
 	public String toML() {
-		String result = func.getName();
+		String result = func.toML();
 		if (func.getType().getFirst().getSortList().size() > 0) {
 			int num = 0;
 			for (SimpleExpression e : exprs) {

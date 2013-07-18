@@ -221,7 +221,7 @@ processDecl returns [ProcessDeclaration value] locals [String i,String p, String
  @init {
   
  } :
-  ID {$value = new ProcessDeclaration ($ID.text) ;}
+  ID {$value = Manager.retProcessDeclaration ($ID.text) ;}
   (
     LPAREN ID {$i=$ID.text;}COLON
     (
@@ -261,8 +261,10 @@ processTerm returns [ProcessTerm value] :
     
 processTermChoice returns [ProcessTerm value]
   :
-  left=processTermSingle right=pTP 
-  { if ($right.value==null) $value = $left.value; 
+  //left=processTermSingle right=pTP 
+  left=pTP right=processTermSingle
+    { //if ($right.value==null) $value = $left.value;
+        if ($left.value==null) $value = $right.value ;
     else $value=new ProcessTermChoice($left.value,$right.value) ;}
   ;
 
@@ -299,9 +301,11 @@ pTP returns [ProcessTerm value]
   $value = null ;
 }
   :
-  | PLUS l=processTermSingle r=pTP 
-    { if ($r.value != null) $value = new ProcessTermChoice ($l.value,$r.value);
-      else $value = $l.value ;
+  | //PLUS l=processTermSingle r=pTP
+    l = pTP r=processTermSingle PLUS
+    { //if ($r.value == null) $value = $l.value ;
+        if ($l.value == null) $value = $r.value ;
+      else $value = new ProcessTermChoice ($l.value,$r.value);
     }
   ;
 /*networkTerm : deploy |

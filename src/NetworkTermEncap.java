@@ -23,10 +23,9 @@ public class NetworkTermEncap extends NetworkTerm {
 		this.networkTerm = networkTerm;
 	}
 
-	@Override
 	public String toML() {
 		String result = "n_encap(";
-		result += message.toML();
+		result += message.toML()+"_t";
 		result += ",";
 		result += networkTerm.toML();
 		result += ")";

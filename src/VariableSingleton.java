@@ -32,18 +32,24 @@ public class VariableSingleton {
 	}
 
 	public void removeContext(Context expired) {
-		Vector<Variable> exp = new Vector<Variable>();
 		for (Variable var : vars)
 			if (var.getContext().equals(expired))
-				exp.add(var);
-		for (Variable v : exp)
-			vars.remove(v);
+				var.setValid(false);
 	}
 
 	public Variable addVariable(String name, Sort sort, Context context) {
 		Variable v = new Variable(name, sort, context);
 		vars.add(v);
 		return v;
+	}
+
+	public Variable getParameterVariable(Parameter local) {
+		for (Variable v : vars)
+			if (v.getContext().equals(local.getContext())
+					&& v.getName().equals(local.getId())
+					&& v.getSort().equals(local.getType()))
+				return v;
+		return null;
 	}
 
 }

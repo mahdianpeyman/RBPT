@@ -15,7 +15,6 @@ public class ProcessTermAction extends ProcessTerm {
 		this.next = next;
 	}
 
-	@Override
 	public String toML() {
 		String result = "p_prefix(";
 		result += actionInstance.toML();

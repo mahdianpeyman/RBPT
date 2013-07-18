@@ -21,6 +21,9 @@ eqn
   and(false,x)=false;
   add(zero,m) = m;
   add(succ(n), m) = succ(add(n,m));
+  
+msg
+	ack;
 
 loc l;
 

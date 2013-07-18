@@ -1,4 +1,4 @@
-public class Action {
+public class Action implements ML {
 	private String id;
 	private Tuple params;
 
@@ -21,6 +21,11 @@ public class Action {
 
 	public void setParams(Tuple params) {
 		this.params = params;
+	}
+
+	public String toML() {
+		// TODO Auto-generated method stub
+		return FunctionSingleton.getInstance().getFunctionAction(getId()).toML();
 	}
 
 }

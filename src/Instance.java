@@ -1,5 +1,5 @@
 
 
 
-public abstract class Instance extends SimpleExpression {
+public abstract class Instance extends SimpleExpression implements ML {
 }

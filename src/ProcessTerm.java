@@ -1,5 +1,4 @@
-public abstract class ProcessTerm {
+public abstract class ProcessTerm  implements ML {
 
-	public abstract String toML();
 
 }

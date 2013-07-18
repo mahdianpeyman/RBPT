@@ -18,15 +18,13 @@ public class InstanceLocation extends Instance {
 		this.location = location;
 	}
 
-	@Override
 	public Sort getSort() {
 		// TODO Auto-generated method stub
 		return SortSingleton.getInstance().getSort("Loc");
 	}
 
-	@Override
 	public String toML() {
-		return location.getId();
+		return location.toML();
 	}
 
 }

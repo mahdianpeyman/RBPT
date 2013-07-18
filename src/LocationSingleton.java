@@ -7,6 +7,9 @@ public class LocationSingleton {
 
 	private LocationSingleton() {
 		locs = new Vector<Location>();
+		addLocation("unknown");
+		Type type = new Type(SortSingleton.getInstance().getSort("Loc")) ;
+		FunctionSingleton.getInstance().addFunction("unknown", type);
 	}
 
 	public static LocationSingleton getInstance() {

@@ -1,6 +1,6 @@
 //import java.util.Vector;
 
-public class Sort {
+public class Sort  implements ML{
 
 	private String name;
 
@@ -24,7 +24,7 @@ public class Sort {
 	}
 
 	public String toML() {
-		return name;
+		return name 	;
 	}
 
 }

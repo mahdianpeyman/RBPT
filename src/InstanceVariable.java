@@ -17,14 +17,12 @@ public class InstanceVariable extends Instance {
 		this.var = var;
 	}
 
-	@Override
 	public Sort getSort() {
 		return var.getSort();
 	}
 
-	@Override
 	public String toML() {
-		return var.getName();
+		return var.toML();
 	}
 
 }

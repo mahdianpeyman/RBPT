@@ -23,7 +23,6 @@ public class ProcessTermChoice extends ProcessTerm {
 		this.right = right;
 	}
 
-	@Override
 	public String toML() {
 		String result = "p_choice(";
 		result += left.toML();

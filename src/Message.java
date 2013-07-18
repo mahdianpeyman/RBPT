@@ -1,4 +1,4 @@
-public class Message {
+public class Message  implements ML {
 	private String ID;
 	private Tuple params;
 
@@ -25,7 +25,7 @@ public class Message {
 	}
 
 	public String toML() {
-		String result = getID();
+		String result = FunctionSingleton.getInstance().getFunctionMessage(ID).toML() ;
 		return result;
 	}
 }

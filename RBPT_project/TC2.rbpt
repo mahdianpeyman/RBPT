@@ -6,10 +6,19 @@ cons
    true, false : -> Bool;
 map
    not : Bool -> Bool;	
+   and : Bool # Bool -> Bool;
 
+var
+	x : Bool ;
 eqn
   not(true) = false;
   not(false) = true;
+  and(true,true) = true;
+  and(x,false) = false;
+  and(false,x)=false;
+
+msg
+	ack;
 
 act
    a;

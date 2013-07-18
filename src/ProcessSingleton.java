@@ -21,7 +21,7 @@ public class ProcessSingleton {
 
 	public Process getProcess(String name) {
 		for (int i = 0; i < procs.size(); i++) 
-			if (procs.get(i).getName().equals(name)) 
+			if (procs.get(i).getID().equals(name)) 
 				return procs.get(i);
 		return null;
 	}

@@ -23,10 +23,9 @@ public class NetworkTermAbs extends NetworkTerm {
 		this.message = message;
 	}
 
-	@Override
 	public String toML() {
-		String result = "n_abs(";
-		result += message.toML();
+		String result = "n_abs (";
+		result += message.toML()+"_t";
 		result += ",";
 		result += result = networkTerm.toML();
 		result += ")";

@@ -19,19 +19,22 @@ public class InstanceProcess extends Instance {
 		this.proc = proc;
 	}
 
-	@Override
 	public String toML() {
-		String result = proc.getDeclaration().getId();
-		int num = 0;
-		for (SimpleExpression e : exprs) {
-			num++;
-			if (num == 1)
-				result += " ( ";
+		String result ="p_recvar ( rv ( ";
+		result += proc.toML();
+		result += " , " ;
+		Vector<Parameter> params = getProc().getDeclaration().getParams();
+		int i ;
+		for (i = 0 ; i < params.size() ; i++ ) {
+			if ( i == 0 ) 
+				result += " [ ";
 			else
-				result += " , ";
-			result += e.toML();
+				result += " , " ;
+			result+= params.get(i) .getType().toML() + "_Var (" + exprs.get(i) .toML()+ ")";
 		}
-		result += " )";
+		if ( i == 0 )
+			result += " [ ";
+		result += " ] )  )";
 		return result;
 	}
 

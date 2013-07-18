@@ -23,12 +23,12 @@ public class NetworkTermHide extends NetworkTerm {
 		this.networkTerm = networkTerm;
 	}
 
-	@Override
 	public String toML() {
-		String result = "n_hide(";
-		result += location.getId();
-		result += ",";
+		String result = "n_hide( ";
+		result += location.toML();
+		result += " , ";
 		result += networkTerm.toML();
+		result += " ) " ;
 		return result;
 	}
 

@@ -1,4 +1,4 @@
-public class Function {
+public class Function implements ML{
 	private String name;
 	private Type type;
 
@@ -20,6 +20,10 @@ public class Function {
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+
+	public String toML() {
+		return getName()+"_"+getType().getSecond().toML();
 	}
 
 }

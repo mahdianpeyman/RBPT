@@ -29,9 +29,8 @@ public class InstanceAction extends Instance {
 		return SortSingleton.getInstance().getSort("Action");
 	}
 
-	@Override
 	public String toML() {
-		String result = act.getId();
+		String result = act.toML();
 		if (act.getParams().getSortList().size() > 0) {
 			int num = 0;
 			for (SimpleExpression e : exprs) {

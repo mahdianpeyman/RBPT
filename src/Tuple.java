@@ -1,6 +1,6 @@
 import java.util.Vector;
 
-public class Tuple {
+public class Tuple implements ML {
 	private Vector<Sort> sortList;
 
 	public Vector<Sort> getSortList() {

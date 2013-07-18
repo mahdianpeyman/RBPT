@@ -1,4 +1,4 @@
-public class Context {
+public class Context implements ML {
 	static int counter = 0;
 	private int level = 0;
 	private int id;
@@ -41,6 +41,11 @@ public class Context {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public String toML() {
+		String result = Integer.toString(getId()) ;
+		return result  ;
 	}
 
 }

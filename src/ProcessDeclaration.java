@@ -1,12 +1,14 @@
 import java.util.Vector;
 
-public class ProcessDeclaration {
+public class ProcessDeclaration implements ML {
 	private String id;
 	private Vector<Parameter> params;
+	private Context context;
 
-	ProcessDeclaration(String str) {
-		id = str;
-		params = new Vector<Parameter>();
+	public ProcessDeclaration(String id2, Context father) {
+		setId(id2);
+		setParams(new Vector<Parameter>());
+		setContext(father);
 	}
 
 	public String getId() {
@@ -25,29 +27,43 @@ public class ProcessDeclaration {
 		this.params = params;
 	}
 
-	public void addParam(String id, Sort sort) {
-		Parameter p = new Parameter(id, sort);
+	public String toML() {
+
+		String result = "rv ( ";
+		result += getId() + "_RecName";
+		result += " , " ;
+		result += ("  ");
+
+		int nParam = 0;
+		for (Parameter param : params) {
+			nParam++;
+			if (nParam == 1)
+				result += (" [ ");
+			else
+				result += (" , ");
+			Variable v = VariableSingleton.getInstance().getParameterVariable(
+					param);
+			result += v.getSort().toML() + "_Var (";
+			result += v.toML();
+			result += " ) ";
+		}
+		if (nParam == 0)
+			result += " [ ";
+		result += " ] )";
+		return result;
+	}
+
+	public Context getContext() {
+		return context;
+	}
+
+	public void setContext(Context context) {
+		this.context = context;
+	}
+
+	public void addParam(Parameter p) {
 		params.add(p);
 
-	}
-
-	public Object getName() {
-		return id;
-	}
-
-	public String toML() {
-		String result = getId()  ;
-		int n = 0 ;
-		for (Parameter p : getParams() ) {
-			n++ ;
-			if (n==1) 
-				result += " of " ;
-			else
-				result+=  " * " ;
-			result += p.getType().toML() ;
-		}
-		// TODO Auto-generated method stub
-		return result ;
 	}
 
 }

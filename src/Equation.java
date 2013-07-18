@@ -1,4 +1,4 @@
-public class Equation {
+public class Equation implements ML{
 	private SimpleExpression left;
 	private SimpleExpression right;
 

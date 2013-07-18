@@ -1,6 +1,6 @@
 import java.util.Vector;
 
-public abstract class SimpleExpression {
+public abstract class SimpleExpression  implements ML {
 
 	private String ID;
 	protected Vector<SimpleExpression> exprs;
@@ -36,7 +36,5 @@ public abstract class SimpleExpression {
 	}
 
 	public abstract Sort getSort();
-
-	public abstract String toML();
 
 }

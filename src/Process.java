@@ -1,14 +1,17 @@
-public class Process {
+public class Process  implements ML{
 	private ProcessDeclaration declaration;
 	private ProcessTerm term;
+	private String ID ;
 
 	public Process(ProcessDeclaration declaration2, ProcessTerm term2) {
 		setDeclaration(declaration2);
 		setTerm(term2);
+		setID(declaration2.getId()) ;
 	}
 
 	public Process(ProcessDeclaration declaration2) {
 		setDeclaration(declaration2);
+		setID(declaration2.getId()) ;
 	}
 
 	public ProcessDeclaration getDeclaration() {
@@ -27,8 +30,19 @@ public class Process {
 		this.term = term;
 	}
 
-	public Object getName() {
-		return declaration.getName();
+
+	public String toML() {
+		return getID()+"_RecName" ;
 	}
+
+	public String getID() {
+		return ID;
+	}
+
+	public void setID(String iD) {
+		ID = iD;
+	}
+
+	
 
 }
