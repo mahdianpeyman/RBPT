@@ -548,6 +548,8 @@ public class MLGenerator {
 				+ SortSingleton.getInstance().getSort("Loc").toML()
 				+ " * Process");
 		outln("| n_parallel of " + "Process * Process");
+		outln("| n_sync of " + "Process * Process");
+		outln("| n_lmerge of " + "Process * Process");
 		outln(";");
 
 	}
