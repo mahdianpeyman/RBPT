@@ -75,6 +75,8 @@ datatype Process = p_nil
 | n_hide of Loc * Process
 | n_deploy of Loc * Process
 | n_parallel of Process * Process
+| n_sync of Process * Process
+| n_lmerge of Process * Process
 ;
 
 (* datatype RSE *)
